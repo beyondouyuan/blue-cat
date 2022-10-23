@@ -1,0 +1,130 @@
+@import 'src/style/variables/default.scss';
+
+.book-page {
+  width: 100%;
+  height: 100%;
+  padding: 20px;
+  box-sizing: border-box;
+  background-color: $background-base;
+
+  .content-container {
+    width: 100%;
+    padding: 20px;
+    box-sizing: border-box;
+    border-radius: $border-radius-lg;
+    background-color: $white;
+
+    .title {
+      height: 70px;
+      line-height: 70px;
+      font-size: $font-size-sm;
+      color: $text-secondary-color;
+      border-bottom: 1px solid $border-light-color;
+    }
+
+    .tips {
+      height: 70px;
+      line-height: 70px;
+      font-size: $font-size-sm;
+      color: $text-primary-color
+    }
+
+    .bottom {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      .total {
+        .txt {
+          font-size: $font-size-sm;
+          color: $text-secondary-color;
+          margin-right: 10px;
+        }
+      }
+    }
+
+    .item-container {
+      width: 100%;
+      &__content {
+        width: 100%;
+        box-sizing: border-box;
+        display: flex;
+        justify-content: space-between;
+
+        .foods {
+          width: 100px;
+          height: 100px;
+
+          .image {
+            width: 100%;
+            height: 100%;
+            border-radius: $border-radius-lg;
+            background-color: $background-gray;
+          }
+        }
+
+        .product {
+          flex: 1;
+          padding: 0 15px;
+          box-sizing: border-box;
+          display: flex;
+          flex-direction: column;
+
+          .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+          }
+
+          .sub-title,
+          .price {
+            font-size: $font-size-md;
+            color: $text-primary-color;
+          }
+
+          .desc,
+          .number {
+            font-size: $font-size-sm;
+            color: $text-secondary-color;
+          }
+        }
+      }
+    }
+  }
+
+  .submit-container {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    z-index: 100;
+    width: 100%;
+    padding: 20px;
+    box-sizing: border-box;
+    background-color: $white;
+
+    &__content {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      .shop {
+        font-size: $font-size-sm;
+        color: $text-secondary-color;
+      }
+
+      .submit-action {
+        display: flex;
+        align-items: center;
+      }
+
+      .pick {
+        width: 165px;
+        margin-right: 20px;
+      }
+
+      .submit {
+        width: 135px;
+      }
+    }
+  }
+}

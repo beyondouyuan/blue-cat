@@ -1,0 +1,77 @@
+@import 'src/style/variables/default.scss';
+@import 'src/style/mixins/index.scss';
+
+$dialog-duration: 200ms;
+$component: '.base-dialog';
+
+#{$component} {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  visibility: hidden;
+  z-index: $zIndex-dialog;
+  transition: visibility $dialog-duration ease-in;
+
+  &-overlay,
+  &-content {
+    opacity: 0;
+    transition: opacity $dialog-duration ease-in;
+  }
+  &-overlay {
+    @include overlay;
+  }
+
+  &-content {
+    @include absolute-center();
+    width: 540px;
+    border-radius: $border-radius-sm;
+    background-color: $background-white;
+    overflow: hidden;
+    border-radius: 10px;
+  }
+
+  &-header {
+    padding: 0 20px;
+    box-sizing: border-box;
+    color: $text-primary-color;
+    font-size: $font-size-xl;
+  }
+
+  &-body {
+    width: 100%;
+    padding: 0 20px 20px 20px;
+    box-sizing: border-box;
+    font-size: $font-size-md;
+    color: $text-regular-color;
+    min-height: 100px;
+    max-height: 800px;
+  }
+
+  &-footer {
+    width: 100%;
+    box-sizing: border-box;
+
+    .btn {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: $font-size-md;
+      color: $text-secondary-color;
+
+      &-confirm {
+        color: $primary;
+      }
+    }
+  }
+
+  &-opened {
+    visibility: visible;
+    .base-dialog-overlay,
+    .base-dialog-content {
+      opacity: 1;
+    }
+  }
+}

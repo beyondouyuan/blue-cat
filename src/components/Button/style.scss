@@ -1,0 +1,122 @@
+@import 'src/style/variables/default.scss';
+@import 'src/style/mixins/index.scss';
+
+$component: '.base-button';
+
+#{$component} {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  padding: 0 20px;
+  height: 80px;
+  color: $text-regular-color;
+  font-size: $font-size-lg;
+  line-height: 80px - 2;
+  text-align: center;
+  border-radius: $border-radius-xxs;
+  border: 1px solid $border-light-color;
+  box-sizing: border-box;
+  // @include line();
+
+  &:active {
+    opacity: 1;
+  }
+
+  /* elements */
+
+  &__icon {
+    display: inline-block;
+    margin: 2PX 20px 0 20px;
+  }
+
+  &__text {
+    display: inline;
+  }
+
+
+  /* modifiers */
+  &--active {
+    opacity: 1;
+  }
+
+  &--disabled {
+    opacity: 0.6;
+
+    &:active {
+      opacity: 0.6;
+    }
+  }
+
+  &--primary {
+    color: $text-white-color;
+    border: 1px solid $primary;
+    background: $primary;
+  }
+
+  &--success {
+    color: $text-white-color;
+    border: 1px solid $success;
+    background: $success;
+  }
+
+  &--warning {
+    color: $text-white-color;
+    border: 1px solid $warning;
+    background: $warning;
+  }
+
+  &--danger {
+    color: $text-white-color;
+    border: 1px solid $danger;
+    background: $danger;
+  }
+
+  &--info {
+    color: $text-white-color;
+    border: 1px solid $info;
+    background: $info;
+  }
+
+  &--circle {
+    border-radius: $border-radius-lg;
+    background-clip: border-box;
+    overflow: hidden;
+  }
+
+  &--middle {
+    padding: 0 10px;
+    width: auto;
+    min-width: 100px;
+    max-width: 710px;
+    height: 60px;
+    font-size: $font-size-sm;
+    line-height: 60px - 2;
+
+    &.base-button--circle {
+      border-radius: $border-radius-lg;
+    }
+  }
+
+  &--small {
+    padding: 0 10px;
+    width: auto;
+    min-width: 100px;
+    max-width: 710px;
+    height: 50px;
+    font-size: $font-size-sm;
+    line-height: 50px - 2;
+
+    &.base-button--circle {
+      border-radius: $border-radius-lg;
+    }
+  }
+
+  &--full {
+    width: 100%;
+    max-width: 100%;
+    border-radius: 0;
+    &.base-button--circle {
+      border-radius: $border-radius-lg;
+    }
+  }
+}

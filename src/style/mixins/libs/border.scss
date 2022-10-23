@@ -1,0 +1,65 @@
+@import '../../variables/default.scss';
+
+/**
+ * 容器线条（常用于列表分割线）
+ * 依赖容器“定位”
+ * $position: top | bottom | left | right
+ */
+ @mixin container-line($position, $line-color:$border-main-color) {
+  position: relative;
+
+  &:after {
+    content: ' ';
+    display: block;
+    position: absolute;
+    #{$position}: 0;
+
+    @if $position=='top' or $position=='bottom' {
+      left: 0;
+      width: 200%;
+      height: 1px;
+      transform-origin: left;
+    }
+
+    @else {
+      top: 0;
+      width: 1px;
+      height: 200%;
+      transform-origin: top;
+    }
+
+    background-color: $line-color;
+    transform: scale(0.5);
+  }
+}
+
+@mixin border-thin(
+  $color: $border-light-color,
+  $style: solid,
+  $directions: top bottom right left,
+  $width: 1px
+) {
+  @each $value in $directions {
+    border-#{$value}: $width $color $style;
+  }
+}
+
+// 生成 绝对1px 的边框 $radius 为实际测量的 圆角度两倍
+@mixin set1pxBorder($radius, $borderColor: transparent) {
+  position: relative;
+
+  &:after {
+    content: "";
+    border-radius: $radius;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 200%;
+    height: 200%;
+    transform-origin: 0 0;
+    transform: scale(0.5);
+    box-sizing: border-box;
+    // border: 1px solid $borderColor;
+    @include border-thin($borderColor, solid, top bottom right left, 1px);
+  }
+}
