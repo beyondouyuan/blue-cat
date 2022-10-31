@@ -1,4 +1,3 @@
-/* eslint-disable import/first */
 import { Component } from 'react'
 import { View, Text } from '@tarojs/components'
 import classNames from 'classnames'
@@ -7,7 +6,9 @@ import BaseButton from '../../components/Button'
 
 import './index.scss'
 import { handleNavigateTo } from '../../shared/navigator'
-
+import { getAuthorize, getCode, getUserInfo } from '../../shared/login'
+import { requestLogin } from '../../service/user'
+import { getUserTokenCacheSync, setUserInfoCacheSync, setUserTokenCacheSync } from '../../shared/user'
 
 const dines = Array.from(new Array(10), (val, index) => {
   return {
@@ -29,15 +30,57 @@ class IndexPage extends Component {
     this.handleNumberChange = this.handleNumberChange.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this)
   }
-  componentWillReceiveProps (nextProps) {
-    console.log(this.props, nextProps)
+  componentDidMount () {
+    this.handleLogin()
   }
+
+  // componentWillReceiveProps (nextProps) {
+  //   console.log(this.props, nextProps)
+  // }
 
   componentWillUnmount () { }
 
   componentDidShow () { }
 
   componentDidHide () { }
+
+  async handleLogin() {
+    const token = getUserTokenCacheSync()
+    if (token) return
+    const code = await getCode()
+    await getAuthorize()
+    const userResult = await getUserInfo()
+    const {
+      cloudID,
+      encryptedData,
+      iv,
+      rawData,
+      signature,
+      userInfo
+    } = userResult
+    const params = {
+      cloudID,
+      encryptedData,
+      iv,
+      rawData: JSON.parse(rawData),
+      signature,
+      code,
+      userInfo
+    }
+    requestLogin(params)
+      .then(res => {
+        const { avatarUrl, nickName, userToken } = res
+        const userInfoData = {
+          nickName,
+          avatarUrl
+        }
+        setUserInfoCacheSync(userInfoData)
+        setUserTokenCacheSync(userToken)
+      })
+      .catch(e => {
+        console.log('e', e.code)
+      })
+  }
 
   handleNumberChange (v) {
     // if (v === 10) {}

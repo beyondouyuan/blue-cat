@@ -2,7 +2,7 @@
   "miniprogramRoot": "./dist",
   "projectname": "blue-cat",
   "description": "蓝猫go餐饮收款小程序",
-  "appid": "touristappid",
+  "appid": "wxe8a445703d87fd39",
   "setting": {
     "urlCheck": true,
     "es6": false,

@@ -1,0 +1,29 @@
+import jsEncrypt from 'jsencrypt'
+
+import CryptoJS from '../vender/crypto'
+
+const RSA_KEY = 'MIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCtNeW9e7jJFfszyapkLqJEWPdeWTddMHw2EjPCDFe4JrJY8Qynd9M1LpHYDKYxJv1bEtdlP6x89i5pR+b2k63QiFKCbuQKoOef7mU4Be/6KlD1et1h9+gr8JPqSCuc0Z799epL5cSuZfRtpX6EqOhIkfrPG+2fV0ntJ/GB/sJnvxO1PTqpGvXm23PGzyCS4x+LH5wM3b4xf4m3YEXhklLVsfBF13gsNwgQOy55VmDVXibn4Xkt8+MzWFfFQ17otDlig0It/L+Tdfg7YE/eRO19KLU88jzPuibuZIup5AI91Xb7OfjzelEW2HVCclj91CQlht9qWJKRLcBEZTzNP2kJAgMBAAECggEAZGXAQ6OKCSxvjaYP2L/bGGjFAXAPEjn/VUwZqhmDYt8zMzCNWCixSLs0mBlE32qtIfP629obfdcoMagWrMgO0Lejs6zZC3wWpfIFw4JVhhivEorj9Vw/u/BXnE220dADK0s2QkXtSfUYx9FMU1KgSSgsS43xnxF2bTtg1iu3vW/kffp6bNMP7rRiRzgGw6SXfUZZwkD5tcwBmSBP7A3UyAB1OOmaGQk8zTdIazydzFx9bcpZzwhj96yPVnSBowwKA84vBZTlF+CdBrjqWcar7Bey5YW5USx5khVroDJzerqusx1CRxG9LLe8KeGgRB4vNX4hKmBnJIbi3fJAd+SajQKBgQDcMv5n9j76XVzT0YpHDnHs3cIQV/LAOsZ2D+juH4T4WZt6Q7qwfRkESznLyhD8jglmn0OJkxRUBO3K4jFBT8JcA1PfxLuHO4277pir3PRKkov7QvMrF52Su76fzIMtxyBITIyqT60IzgRChvh/jcz7gp4Mcp+NtGXtCIfoOlAaMwKBgQDJXysYR0CGilJIB0Kqkx4d6i/yzFFrrABOkSBjI1HnuZL40cDkRGhGRLYxSjla+NaYfmx8nno1kgfeca3Ngy31EVVHoaDYE4G9kWesuI8ahIe4ep2U8BTnnHrR2PTzq+YUJtRbn7zx7QyO94XwOyt3kUOcBR3He5Tmx0v20x/r0wKBgAITkQaV8d4Wh0uQDEfDQRvEs5HH4oghhcGTQNUOAwj8f1TV0qrbYyMBOphLXYGkLT6EffSMKILqUPu6ylAdWm3XsjDIACS0UQ/WniXwvXT+kMdbyEM9w8SgdJm5KfuChzFnV2Q7wBv3JV8jOrCpO6ebgbYIVqzVaKiljfKIqjy1AoGAXVQUPw5W44QcGnHy/edtX+P4EQmM+uAezEsKvafTABjL+zILuj/SLC8QWcvSxUzq+IYvdZplfYqOxxPcv5D6rcg4xBgu2bZAvUE00aJAAMRHusJpYmva5HVrnvJ0pLKY0eIlLcnc4itBVMl3dB2YSbQzp43ffWLTYhogJOc4ti0CgYBvlolibfqtF/TdkNsVt99OXLxa+YAv10XGTbC2J20JMe0cNKbKwPVufA0Z6aZkLdOtwM4+AQu12K9tM9fjLMDQ5ibxqKqUdJ2dP68S09pGfmVoslcJuUcmuZYGbYQU3KMagkEinmabUYQoxCY8O2vJb5h0VkMNsJoaghNd7O3TlQ=='
+const DES_KEY = 'xwMqwiNTsMUS9b7VBAtePA4t'
+
+export function encryptedDes(data) {
+  const v = JSON.stringify(data)
+  const DES_KEY_HEX = CryptoJS.enc.Utf8.parse(DES_KEY)
+  return CryptoJS.TripleDES.encrypt(v, DES_KEY_HEX, {
+    mode: CryptoJS.mode.ECB,
+    padding: CryptoJS.pad.Pkcs7
+  }).toString()
+}
+
+export function dencryptedDes(data) {
+  const DES_KEY_HEX = CryptoJS.enc.Utf8.parse(DES_KEY)
+  return CryptoJS.TripleDES.decrypt(data, DES_KEY_HEX, {
+    mode: CryptoJS.mode.ECB,
+    padding: CryptoJS.pad.Pkcs7
+  }).toString(CryptoJS.enc.Utf8)
+}
+
+export function encryptedRsa(data) {
+  const encryptHelper = new jsEncrypt()
+  encryptHelper.setPrivateKey(RSA_KEY)
+  return encryptHelper.sign(data, CryptoJS.SHA256, 'sha256')
+}
