@@ -6,16 +6,38 @@ import Content from "./content"
 
 class Board extends Component {
   render () {
-    const { data } = this.props
+    const {
+      data,
+      sizeChecked = '',
+      measureChecked = '',
+      flavorChecked = '',
+      consumeChecked = '',
+      productNumber,
+      totalPrice = 0,
+      currentProduct = {}
+    } = this.props
     return (
       <View className='board-container'>
-        <Header data={data} />
+        <Header data={currentProduct} />
           <Content
-            size={data.size}
-            cate={data.cate}
+            specVoMap={data.specVoMap}
+            consumeCate={data.consumeCate}
             materials={data.materials}
+            sizeChecked={sizeChecked}
+            measureChecked={measureChecked}
+            flavorChecked={flavorChecked}
+            consumeChecked={consumeChecked}
+            onUpdateVo={this.props.onUpdateVo}
+            onChangeVo={this.props.onChangeVo}
           />
-        <Footer data={data} />
+        <Footer
+          data={{
+            productNumber,
+            totalPrice
+          }}
+          onAddCart={this.props.onAddCart}
+          onCounter={this.props.onCounter}
+        />
       </View>
     )
   }

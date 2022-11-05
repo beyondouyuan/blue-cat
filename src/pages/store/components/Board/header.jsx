@@ -8,10 +8,10 @@ function Header({ data }) {
       </View>
       <View className='content'>
         <View className='title'>
-          <Text>{data?.title ?? 'biaoti'}</Text>
+          <Text>{data?.productName ?? ''}</Text>
         </View>
         <View className='desc'>
-          <Text>{data?.desc ?? 'miaoshu'}</Text>
+          <Text>{data?.productName ?? ''}</Text>
         </View>
       </View>
     </View>

@@ -59,16 +59,31 @@ class Content extends Component {
         onScroll={this.handleOnScroll}
       >
         {
-          sourceData.map(item => {
+          sourceData.length ? sourceData.map(item => {
+            const { list = [] } = item
             return (
-              <View key={item.id} className='content-item'>
-                <Item
-                  data={item}
-                  onPress={this.handleOnPress}
-                />
+              <View
+                key={item.value}
+                className='content-wrapper'
+              >
+                {
+                  list.length ? list.map(child => {
+                    return (
+                      <View
+                        key={child.merchantproductId}
+                        className='content-item'
+                      >
+                        <Item
+                          data={child}
+                          onPress={this.handleOnPress}
+                        />
+                      </View>
+                    )
+                  }) : null
+                }
               </View>
             )
-          })
+          }) : null
         }
       </ScrollView>
     )

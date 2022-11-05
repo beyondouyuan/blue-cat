@@ -7,3 +7,19 @@ export function requestLogin(data) {
     bizType: 'userInfo'
   })
 }
+
+export function requestPhone(data) {
+  return apiPost({
+    url: '/wechat/getUserPhone',
+    data,
+    bizType: 'getUserPhone'
+  })
+}
+
+export function queryPhone(data) {
+  return apiPost({
+    url: '/wechat/userPhoneQuery',
+    data,
+    bizType: 'userPhoneQuery'
+  })
+}

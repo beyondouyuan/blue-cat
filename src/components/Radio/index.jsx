@@ -4,6 +4,8 @@ import classNames from 'classnames'
 
 import { View, Text } from '@tarojs/components'
 
+import { isFunction } from '../../shared/type'
+
 import './style.scss'
 
 class BaseRadio extends Component {
@@ -11,12 +13,27 @@ class BaseRadio extends Component {
     options: [],
     checked: '',
     customStyle: '',
-    className: ''
+    className: '',
+    labelName: 'label',
+    valueName: 'value'
   }
 
   constructor(props) {
     super(props)
     this.handleClick = this.handleClick.bind(this)
+    this.state = {
+      _checked: ''
+    }
+  }
+
+  componentWillReceiveProps (nextProps) {
+    const { checked, options } = nextProps
+    if (!options?.length) return
+    if (checked !== this.state._checked) {
+      this.setState({
+        _checked: checked
+      })
+    }
   }
 
   /**
@@ -25,32 +42,36 @@ class BaseRadio extends Component {
    * @returns 回调函数
    */
   handleClick (option, e) {
-    const { disabled, value } = option
+    const { disabled } = option
+    const { valueName } = this.props
     if (disabled) return
 
-    this.props.onChange(value, e)
+    if (isFunction(this.props.onChange)) {
+      this.props.onChange(option[valueName], e)
+    }
   }
 
   render () {
-    const { className, customStyle, options, checked } = this.props
+    const { className, customStyle, options, labelName, valueName } = this.props
+    const { _checked } = this.state
     const rootClass = classNames('base-radio', className)
     return (
       <View className={rootClass} style={customStyle}>
         {
           options.map((option) => {
-            const { value, disabled, label } = option
+            const { disabled } = option
             const optionClass = classNames({
               'base-radio__option': true,
               'base-radio__option--disabled': disabled,
-              'base-radio__option--checked': checked === value
+              'base-radio__option--checked': _checked === '' + option[valueName]
             })
 
             return (
               <View className={optionClass}
-                key={value}
+                key={option[valueName]}
                 onClick={(e) => this.handleClick(option, e)}
               >
-                <Text>{label}</Text>
+                <Text>{option[labelName]}</Text>
               </View>
             )
           })

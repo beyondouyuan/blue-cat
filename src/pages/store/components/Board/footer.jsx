@@ -2,25 +2,26 @@ import { View, Text } from '@tarojs/components'
 import BaseButton from '@components/Button'
 import BaseCounter from '../../../../components/Counter'
 
-function Footer() {
+function Footer({ data, onAddCart, onCounter }) {
   return (
     <View className='footer-container'>
       <View className='select'>
         <View className='goods'>
           <View className='price'>
             <Text className='price-unit price-red'>¥</Text>
-            <Text className='price-value price-red price-primary'>10</Text>
+            <Text className='price-value price-red price-primary'>{data.totalPrice}</Text>
+            <Text className='txt-h4 txt-secondary'>/份</Text>
           </View>
-          <View className='desc'>
+          <View className='desc txt-h3'>
             <Text>中份</Text>/<Text>堂食</Text>
           </View>
         </View>
         <View className='goods-counter'>
-            <BaseCounter counter={1} limit={1} />
+            <BaseCounter counter={data.productNumber} limit={1} onCounter={onCounter} />
           </View>
       </View>
       <View className='submit'>
-        <BaseButton full circle>加入购物车</BaseButton>
+        <BaseButton full circle onClick={onAddCart}>加入购物车</BaseButton>
       </View>
     </View>
   )

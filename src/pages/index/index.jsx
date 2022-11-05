@@ -24,7 +24,8 @@ class IndexPage extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      dineNumber: 1
+      dineNumber: 1,
+      tableId: '6'
     }
 
     this.handleNumberChange = this.handleNumberChange.bind(this)
@@ -90,8 +91,13 @@ class IndexPage extends Component {
   }
 
   handleSubmit () {
+    const { tableId, dineNumber } = this.state
     handleNavigateTo({
-      path: '/pages/store/index'
+      path: '/pages/store/index',
+      params: {
+        tableId,
+        dineNumber
+      }
     })
   }
 

@@ -6,18 +6,18 @@ function Item ({data, onPress}) {
     <View className='item-container'>
       <View className='item-container__content'>
         <View className='foods'>
-          <Image className='image' src={data.url} />
+          <Image className='image' src={data.headurl} />
         </View>
         <View className='product'>
           <View className='header'>
             <View className='title'>
-              <Text>{data.title}</Text>
+              <Text>{data.productName}</Text>
             </View>
             <View className='desc'>
-              <Text>{data.desc}</Text>
+              <Text>{data.introduce}</Text>
             </View>
             <View className='sales'>
-              <Text>{data.sales}</Text>
+              <Text>{data.salenum}</Text>
             </View>
           </View>
           <View className='action'>

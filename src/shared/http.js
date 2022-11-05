@@ -44,9 +44,12 @@ const request = async (options) => {
     url: `${BASE_API}${url}`,
   }
 
+  console.log(`解密加密后传的参数`, dencryptedDes(encryptedParams))
+
   const { data: body } = await Taro.request(setting)
   if (body.retCode === 'C0000' && body.data) {
     const result = dencryptedDes(body.data)
+    console.log('解密后的响应数据', result)
     return JSON.parse(result)
   } else {
     throw new ApiServiceError({}, body.retMsg, body.retCode)

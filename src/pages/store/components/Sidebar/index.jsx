@@ -1,14 +1,14 @@
 import { View, Text } from '@tarojs/components'
 
-function Sidebar(props) {
+function Sidebar({sourceData = []}) {
   return (
     <View className='sidebar-container'>
       {
-        props?.menus && props.menus.map((item, idx) => {
+        sourceData && sourceData.map((item) => {
           return (
             <View
               className='sidebar-item'
-              key={idx}
+              key={item.value}
             >
               <Text>{item.label}</Text>
             </View>
