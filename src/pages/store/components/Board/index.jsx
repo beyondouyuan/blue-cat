@@ -5,7 +5,7 @@ import Footer from "./footer"
 import Content from "./content"
 
 class Board extends Component {
-  render () {
+  render() {
     const {
       data,
       sizeChecked = '',
@@ -19,17 +19,17 @@ class Board extends Component {
     return (
       <View className='board-container'>
         <Header data={currentProduct} />
-          <Content
-            specVoMap={data.specVoMap}
-            consumeCate={data.consumeCate}
-            materials={data.materials}
-            sizeChecked={sizeChecked}
-            measureChecked={measureChecked}
-            flavorChecked={flavorChecked}
-            consumeChecked={consumeChecked}
-            onUpdateVo={this.props.onUpdateVo}
-            onChangeVo={this.props.onChangeVo}
-          />
+        <Content
+          specVoMap={data.specVoMap}
+          consumeCate={data.consumeCate}
+          materials={data.materials}
+          sizeChecked={sizeChecked}
+          measureChecked={measureChecked}
+          flavorChecked={flavorChecked}
+          consumeChecked={consumeChecked}
+          onUpdateVo={this.props.onUpdateVo}
+          onChangeVo={this.props.onChangeVo}
+        />
         <Footer
           data={{
             productNumber,

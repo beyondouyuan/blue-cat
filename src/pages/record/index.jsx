@@ -1,12 +1,23 @@
 import { Component } from 'react'
-import { View, Text } from '@tarojs/components'
+import { View } from '@tarojs/components'
 
 import './index.scss'
+import { requestOrderList } from '../../service/order'
+import Content from './components/Content'
+import { handleNavigateTo } from '../../shared/navigator'
 
 
 class RecordPage extends Component {
-  componentWillReceiveProps (nextProps) {
-    console.log(this.props, nextProps)
+  constructor(props) {
+    super(props)
+    this.state = {
+      sourceData: []
+    }
+    this.handleFetchData = this.handleFetchData.bind(this)
+  }
+
+  componentDidMount () {
+    this.handleFetchData()
   }
 
   componentWillUnmount () { }
@@ -15,10 +26,32 @@ class RecordPage extends Component {
 
   componentDidHide () { }
 
+  handleFetchData () {
+    requestOrderList()
+      .then(res => {
+        this.setState({
+          sourceData: res
+        })
+      })
+  }
+
+  handlePress (data) {
+    handleNavigateTo({
+      path: '/pages/order/index',
+      params: {
+        orderId: data.orderId
+      }
+    })
+  }
+
   render () {
+    const { sourceData } = this.state
     return (
       <View className='page-container record-page'>
-        <View><Text>订单列表</Text></View>
+        <Content
+          sourceData={sourceData}
+          onPress={this.handlePress}
+        />
       </View>
     )
   }

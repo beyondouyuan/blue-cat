@@ -9,6 +9,7 @@ import { handleNavigateTo } from '../../shared/navigator'
 import { getAuthorize, getCode, getUserInfo } from '../../shared/login'
 import { requestLogin } from '../../service/user'
 import { getUserTokenCacheSync, setUserInfoCacheSync, setUserTokenCacheSync } from '../../shared/user'
+import { setTableCacheSync } from '../../shared/global'
 
 const dines = Array.from(new Array(10), (val, index) => {
   return {
@@ -19,13 +20,12 @@ const dines = Array.from(new Array(10), (val, index) => {
 
 const groupDines = chunk(dines, 5)
 
-
 class IndexPage extends Component {
   constructor(props) {
     super(props)
     this.state = {
       dineNumber: 1,
-      tableId: '6'
+      tableId: '7'
     }
 
     this.handleNumberChange = this.handleNumberChange.bind(this)
@@ -92,6 +92,7 @@ class IndexPage extends Component {
 
   handleSubmit () {
     const { tableId, dineNumber } = this.state
+    setTableCacheSync(tableId)
     handleNavigateTo({
       path: '/pages/store/index',
       params: {

@@ -31,3 +31,19 @@ export function requestCreateShoppingCart(data) {
     bizType: 'operationShoppingCart'
   })
 }
+
+export function requestShoppingCartList(data) {
+  return apiPost({
+    url: '/wechat/queryShoppingCart',
+    data,
+    bizType: 'queryShoppingCart'
+  })
+}
+
+export function cleanShoppingCart(data) {
+  return apiPost({
+    url: '/wechat/deleteShoppingCart',
+    data,
+    bizType: 'deleteShoppingCart'
+  })
+}

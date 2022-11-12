@@ -1,8 +1,10 @@
 import { View, Text } from '@tarojs/components'
+import classNames from 'classnames'
+
 import BaseButton from '../../../../components/Button'
 import MButton from '../../../../components/MButton'
 
-function Submit ({ onGetAuthor, phoneInfo = {}, onPress }) {
+function Submit ({ onGetAuthor, phoneInfo = {}, onPress, onShowCart ,cartNum = 0, className }) {
   const buttonProps = {
     openType: 'getPhoneNumber',
     size: 'mini',
@@ -11,15 +13,27 @@ function Submit ({ onGetAuthor, phoneInfo = {}, onPress }) {
     full: true,
     'hover-class': 'none'
   }
+  const rootClass = 'submit-container'
   return (
-    <View className='submit-container'>
-      <View className='submit-container__content'>
+    <View className={classNames(rootClass, className)}>
+      <View
+        className='submit-container__content'
+        onClick={(e) => {
+          onShowCart(e)
+          e.preventDefault()
+          e.stopPropagation()
+        }}
+      >
         <View className='shop'>
-          <Text>已选购1件物品</Text>
+          {
+            cartNum ? (
+              <Text>已选购{cartNum}件物品</Text>
+            ) : null
+          }
         </View>
         <View className='submit'>
           {
-            phoneInfo.phone ? (
+            phoneInfo.phoneTag ? (
               <BaseButton size='middle' circle onClick={onPress}>选好了</BaseButton>
             ) : (
               <MButton

@@ -1,4 +1,54 @@
-.index {
-  flex-direction: column;
-  width: 100%;
+@import 'src/style/variables/default.scss';
+
+.mine-page {
+  .account-container {
+    width: 100%;
+    height: 20vh;
+    background-color: $primary;
+
+    &__content {
+      width: 100%;
+      height: 100%;
+      padding: 0 30px;
+      box-sizing: border-box;
+      display: flex;
+      align-items: center;
+
+      &-avatar {
+        .avatar {
+          width: 168px;
+          height: 168px;
+          border-radius: 50%;
+          overflow: hidden;
+        }
+      }
+    }
+
+    .account-user {
+      margin-left: 15px;
+      font-size: $font-size-sm;
+      color: $text-white-color;
+
+      &__name {
+        font-size: $font-size-lg;
+      }
+    }
+  }
+
+
+  .menu-container {
+    width: 94%;
+    padding: 20px;
+    box-sizing: border-box;
+    margin: 40px auto;
+    border-radius: $border-radius-xl;
+    background-color: $background-white;
+
+    .menu-item {
+      height: 60px;
+      display: flex;
+      align-items: center;
+    }
+  }
+
 }

@@ -10,7 +10,7 @@ function Item ({ data }) {
         <View className='product'>
           <View className='header'>
             <View className='sub-title'>
-              <Text>{data.title}</Text>
+              <Text>{data.productName}</Text>
             </View>
             <View className='price'>
               <Text className='price-unit'>¥</Text>
@@ -18,10 +18,10 @@ function Item ({ data }) {
             </View>
           </View>
           <View className='desc'>
-            <Text>{data.desc}</Text>
+            <Text>{data.specificationRemark}</Text>
           </View>
           <View className='number'>
-            <Text>{data.number}</Text>
+            <Text>{data.chooseSum}份</Text>
           </View>
         </View>
       </View>

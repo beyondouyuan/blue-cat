@@ -4,7 +4,7 @@ import { View, Text } from '@tarojs/components'
 import './index.scss'
 
 
-class LoginPage extends Component {
+class MemberPage extends Component {
   componentWillReceiveProps (nextProps) {
     console.log(this.props, nextProps)
   }
@@ -17,12 +17,12 @@ class LoginPage extends Component {
 
   render () {
     return (
-      <View className='page-container login-page'>
-        <View><Text>登陆</Text></View>
+      <View className='page-container member-page'>
+        <View><Text>支付</Text></View>
       </View>
     )
   }
 }
 
-export default LoginPage
+export default MemberPage
 

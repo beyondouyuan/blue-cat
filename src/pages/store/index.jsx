@@ -8,20 +8,22 @@ import Content from './components/Content'
 import Action from './components/Action'
 import Submit from './components/Submit'
 import Board from './components/Board'
+import Cart from './components/Cart'
 
 import { handleNavigateTo } from '../../shared/navigator'
 import { getCurrentInstance } from '../../shared/get-instance'
 
 import './index.scss'
-import { requestCreateShoppingCart, requestMerchantTable, requestProductDimension, requestProductList } from '../../service/store'
+import { cleanShoppingCart, requestCreateShoppingCart, requestMerchantTable, requestProductDimension, requestProductList, requestShoppingCartList } from '../../service/store'
 import { queryPhone, requestPhone } from '../../service/user'
 import { initSourceData, initMaterialsSource, updateMaterialsSource } from '../../shared/cart'
 import Compute from '../../shared/compute'
+import { getTableCacheSync } from '../../shared/global'
 
 const cate = [{
   value: '1',
   label: '打包'
-},{
+}, {
   value: '2',
   label: '堂食'
 }]
@@ -33,7 +35,7 @@ class StorePage extends Component {
       showSearch: false,
       drawerVisible: false,
       currentProduct: {},
-      totalPrice: 0,
+      productPrice: 0,
       productNumber: 1,
       storeInfo: {},
       sidebarList: [],
@@ -45,38 +47,44 @@ class StorePage extends Component {
       flavorChecked: '',
       consumeChecked: '1',
       sideList: [],
-      basePrice: 0
+      basePrice: 0,
+      packPrice: 0,
+      shoppingCartList: [],
+      showType: 'select',
+      productConsumeType: {}
     }
     this.handleOnScroll = this.handleOnScroll.bind(this)
     this.handleCloseDrawer = this.handleCloseDrawer.bind(this)
     this.handleSelect = this.handleSelect.bind(this)
-    this.handlSubmit = this.handlSubmit.bind(this)
+    this.handleSubmit = this.handleSubmit.bind(this)
     this.handleFetchProduct = this.handleFetchProduct.bind(this)
     this.handleAddCart = this.handleAddCart.bind(this)
     this.handleUpdateCounter = this.handleUpdateCounter.bind(this)
     this.handleUpdateVo = this.handleUpdateVo.bind(this)
-    this.handlChangeVo = this.handlChangeVo.bind(this)
+    this.handleChangeVo = this.handleChangeVo.bind(this)
     this.handleUpdateSideList = this.handleUpdateSideList.bind(this)
+    this.handleGetAuthor = this.handleGetAuthor.bind(this)
+    this.fetchShopCartList = this.fetchShopCartList.bind(this)
+    this.handleShowCart = this.handleShowCart.bind(this)
+    this.handleUpdateShopCart = this.handleUpdateShopCart.bind(this)
+    this.handleCleanShopCart = this.handleCleanShopCart.bind(this)
   }
 
-  componentDidMount () {
+  componentDidMount() {
     this.handleQueryPhone()
     this.handleFetchData()
+    this.fetchShopCartList()
   }
 
-  componentWillReceiveProps (nextProps) {
-    console.log(this.props, nextProps)
-  }
+  componentWillUnmount() { }
 
-  componentWillUnmount () { }
+  componentDidShow() { }
 
-  componentDidShow () { }
-
-  componentDidHide () { }
+  componentDidHide() { }
 
   $instance = getCurrentInstance()
 
-  handleQueryPhone () {
+  handleQueryPhone() {
     queryPhone()
       .then(res => {
         this.setState({
@@ -85,11 +93,11 @@ class StorePage extends Component {
       })
   }
 
-  async handleFetchData () {
+  async handleFetchData() {
     try {
       const { tableId, dineNumber } = this.$instance.router.params
       const params = {
-        tableId
+        tableId: tableId || getTableCacheSync() || ''
       }
       const storeInfo = await requestMerchantTable(params)
       this.setState({
@@ -103,7 +111,7 @@ class StorePage extends Component {
     }
   }
 
-  handleFetchProduct () {
+  handleFetchProduct() {
     const { storeInfo } = this.state
     const params = {
       merchantNum: storeInfo.merchantNum
@@ -118,21 +126,22 @@ class StorePage extends Component {
       })
   }
 
-  handleOnScroll (data) {
+  handleOnScroll(data) {
     this.setState({
       showSearch: data.show
     })
   }
 
-  handleCloseDrawer () {
+  handleCloseDrawer() {
     this.setState({
       drawerVisible: false
     })
   }
 
-  handleSelect (data) {
+  handleSelect(data) {
     this.setState({
-      currentProduct: data
+      currentProduct: data,
+      showType: 'select'
     })
     const params = {
       productId: data.merchantproductId
@@ -141,9 +150,10 @@ class StorePage extends Component {
       .then(res => {
         const {
           specVoMap,
-          merchantProductSideVoList
+          merchantProductSideVoList,
+          productConsumeType
         } = res
-        const { $$materialsSource } = this.state
+        const { $$materialsSource, consumeChecked } = this.state
         const $$initSource = initMaterialsSource(merchantProductSideVoList)
         const newSource = $$materialsSource.set('materials', $$initSource)
         const sizeChecked = '' + specVoMap?.SIZE[0]?.productSpecId ?? ''
@@ -154,29 +164,39 @@ class StorePage extends Component {
           $$materialsSource: newSource,
           sizeChecked,
           measureChecked,
-          flavorChecked
+          flavorChecked,
+          productConsumeType
         }, () => {
           const specListPrice = this.getSpecListPrice()
-          const totalPrice = Compute.add(specListPrice, data.price)
+          let productPrice = Compute.add(specListPrice, data.price)
+          let packPrice = 0
+          if (consumeChecked === '1') {
+            packPrice = +productConsumeType['price'] || 0
+          }
           this.setState({
             drawerVisible: true,
-            totalPrice,
-            basePrice: totalPrice
+            productPrice,
+            packPrice,
+            basePrice: productPrice
           })
         })
       })
-    // this.setState({
-    //   drawerVisible: true
-    // })
   }
 
-  handlSubmit () {
+  handleSubmit() {
+    const { storeInfo } = this.state
+    const { tableId, dineNumber } = this.$instance.router.params
     handleNavigateTo({
-      path: '/pages/book/index'
+      path: '/pages/book/index',
+      params: {
+        tableId: tableId || getTableCacheSync() || '',
+        dineNumber,
+        merchantNum: storeInfo.merchantNum
+      }
     })
   }
 
-  handleGetAuthor (options) {
+  handleGetAuthor(options) {
     const { type, detail, status } = options
     if (status === 'success' && type === 'phone') {
       const params = {
@@ -191,7 +211,7 @@ class StorePage extends Component {
     }
   }
 
-  getSpecListPrice () {
+  getSpecListPrice() {
     const {
       specVoMap,
       sizeChecked,
@@ -218,7 +238,7 @@ class StorePage extends Component {
     return specListPrice
   }
 
-  getSpecList () {
+  getSpecList() {
     const {
       specVoMap,
       sizeChecked,
@@ -250,12 +270,12 @@ class StorePage extends Component {
     return targetList
   }
 
-  handleUpdateSideList () {
+  handleUpdateSideList() {
     const { $$materialsSource, basePrice } = this.state
     const sourceData = $$materialsSource.get('materials') || []
     const targetList = []
     let sidePirce = 0
-    for(let i = 0; i < sourceData.length; i++) {
+    for (let i = 0; i < sourceData.length; i++) {
       const item = sourceData[i]
       if (item.num) {
         const target = {
@@ -269,36 +289,42 @@ class StorePage extends Component {
         targetList.push(target)
       }
     }
-    const allPrice = Compute.add(basePrice, sidePirce)
+    const productPrice = Compute.add(basePrice, sidePirce)
     this.setState({
       sideList: targetList,
-      totalPrice: allPrice
+      productPrice: productPrice
     })
   }
 
-  handleAddCart () {
+  handleAddCart() {
     const {
-      totalPrice,
+      productPrice,
       currentProduct,
       consumeChecked,
       productNumber,
-      sideList
+      sideList,
+      packPrice
     } = this.state
-    const allPrice = Compute.mul(totalPrice, productNumber)
+    const isPack = consumeChecked === '1'
+    const totalPrice = Compute.mul(productPrice, productNumber)
+    const allPrice = Compute.add(totalPrice, packPrice)
     const specList = this.getSpecList()
     const params = {
       productId: currentProduct.merchantproductId,
       specList,
-      totalPrice: allPrice,
-      packFlag: consumeChecked === '1',
+      totalAmount: allPrice,
+      packFlag: isPack,
       chooseSum: productNumber,
       productName: currentProduct.productName,
-      operation: true,
-      sideList: sideList
+      sideList: sideList,
+      headUrl: currentProduct.headUrl
     }
     requestCreateShoppingCart(params)
-      .then(res => {
-        console.log(res)
+      .then(() => {
+        this.fetchShopCartList()
+        this.setState({
+          drawerVisible: false
+        })
       })
   }
 
@@ -308,7 +334,7 @@ class StorePage extends Component {
     })
   }
 
-  handleUpdateVo ({ id, counter, type }) {
+  handleUpdateVo({ id, counter, type }) {
     const { $$materialsSource } = this.state
     const result = updateMaterialsSource($$materialsSource, { id, counter })
     const newSource = $$materialsSource.set('materials', result)
@@ -319,17 +345,73 @@ class StorePage extends Component {
     })
   }
 
-  handlChangeVo ({v, type}) {
+  handleChangeVo({ v, type }) {
     const options = {
+      size: 'sizeChecked',
+      measure: 'measureChecked',
+      flavor: 'flavorChecked',
       pack: 'consumeChecked'
     }
     const change = options[type]
     this.setState({
-      [change]: v
+      [change]: '' + v
+    })
+    if (type === 'pack') {
+      const { productConsumeType } = this.state
+      this.setState({
+        packPrice: v === '1' ? productConsumeType['price'] : 0
+      })
+    }
+  }
+
+  fetchShopCartList() {
+    requestShoppingCartList()
+      .then(res => {
+        const { shoppingCartList } = res
+        this.setState({
+          shoppingCartList
+        })
+      })
+  }
+
+  handleShowCart() {
+    this.setState({
+      showType: 'cart',
+      drawerVisible: true
     })
   }
 
-  render () {
+  handlePress () {
+    handleNavigateTo({
+      path: '/pages/mine/index'
+    })
+  }
+
+  handleCleanShopCart () {
+    cleanShoppingCart()
+      .then(() => {
+        this.setState({
+          shoppingCartList: [],
+          drawerVisible: false
+        })
+      })
+  }
+
+  handleUpdateShopCart (data, options) {
+    const { shoppingCartId, productId } = data
+    const { type } = options
+    const params = {
+      shoppingCartId,
+      productId,
+      operation: type === 'add'
+    }
+    requestCreateShoppingCart(params)
+      .then(() => {
+        this.fetchShopCartList()
+      })
+  }
+
+  render() {
     const {
       showSearch,
       drawerVisible,
@@ -342,25 +424,35 @@ class StorePage extends Component {
       flavorChecked,
       consumeChecked,
       productNumber,
-      totalPrice,
+      productPrice,
       $$materialsSource,
       currentProduct,
       dineNumber,
-      phoneInfo
+      phoneInfo,
+      shoppingCartList,
+      showType,
+      productConsumeType,
+      packPrice
     } = this.state
+    const cartNum = shoppingCartList.length || 0
     const materialsSource = $$materialsSource.get('materials')
     const info = {
       desk: storeInfo.tableNane,
       number: dineNumber,
       showSearch
     }
+    const submitClass = showType === 'cart' ? 'hight' : ''
+    const allPrice = Compute.add(productPrice, packPrice)
     // const style = {
     //   marginTop: showSearch ? '-70px' : '0px'
     // }
     return (
       <View className='page-container store-page'>
         <View className='container'>
-          <Tabar {...info} />
+          <Tabar
+            {...info}
+            onPress={this.handlePress}
+          />
           <View className='body'>
             <Action />
             <View className='main'>
@@ -376,33 +468,48 @@ class StorePage extends Component {
             </View>
           </View>
           <Submit
-            onPress={this.handlSubmit}
+            onPress={this.handleSubmit}
             onGetAuthor={this.handleGetAuthor}
             phoneInfo={phoneInfo}
+            cartNum={cartNum}
+            onShowCart={this.handleShowCart}
+            className={submitClass}
           />
           <Drawer
             show={drawerVisible}
             onClose={this.handleCloseDrawer}
             direction='bottom'
           >
-            <Board
-              data={{
-                materials: materialsSource,
-                specVoMap,
-                consumeCate: cate
-              }}
-              sizeChecked={sizeChecked}
-              measureChecked={measureChecked}
-              flavorChecked={flavorChecked}
-              consumeChecked={consumeChecked}
-              onAddCart={this.handleAddCart}
-              onCounter={this.handleUpdateCounter}
-              onUpdateVo={this.handleUpdateVo}
-              onChangeVo={this.handlChangeVo}
-              productNumber={productNumber}
-              totalPrice={totalPrice}
-              currentProduct={currentProduct}
-            />
+            {
+              showType === 'cart' ? (
+                <Cart
+                  shoppingCartList={shoppingCartList}
+                  onClean={this.handleCleanShopCart}
+                  onUpdate={this.handleUpdateShopCart}
+                />
+              ) : (
+                <Board
+                  data={{
+                    materials: materialsSource,
+                    specVoMap,
+                    consumeCate: cate,
+                    consumeType: productConsumeType
+                  }}
+                  sizeChecked={sizeChecked}
+                  measureChecked={measureChecked}
+                  flavorChecked={flavorChecked}
+                  consumeChecked={consumeChecked}
+                  onAddCart={this.handleAddCart}
+                  onCounter={this.handleUpdateCounter}
+                  onUpdateVo={this.handleUpdateVo}
+                  onChangeVo={this.handleChangeVo}
+                  productNumber={productNumber}
+                  totalPrice={allPrice}
+                  currentProduct={currentProduct}
+                />
+              )
+            }
+
           </Drawer>
         </View>
       </View>

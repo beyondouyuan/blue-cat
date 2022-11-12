@@ -1,13 +1,13 @@
 import { View, Text } from '@tarojs/components'
 import BaseButton from '../../../../components/Button'
 
-function Submit ({ onPress, onSubmit }) {
+function Submit ({ onPress, onSubmit, sumAmount = 0 }) {
   return (
     <View className='submit-container'>
       <View className='submit-container__content'>
         <View className='shop'>
           <Text className='price-unit price-red'>¥</Text>
-          <Text className='price-value price-red'>10</Text>
+          <Text className='price-value price-red'>{sumAmount}</Text>
         </View>
         <View className='submit-action'>
           <View className='pick'>

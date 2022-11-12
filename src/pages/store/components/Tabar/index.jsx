@@ -7,7 +7,9 @@ function Tabar (props) {
         <View className='info'>
           <View><Text>桌号{props.desk}</Text>|{props.number}人就餐</View>
         </View>
-        <View className='nav'></View>
+        <View className='nav'>
+          <View onClick={props.onPress}><Text>我的</Text></View>
+        </View>
       </View>
       {
         props.showSearch && (

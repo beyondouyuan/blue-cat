@@ -30,7 +30,6 @@ class MButton extends Component {
   handleGetPhone (e) {
     const { onGetAuthor } = this.props
     if (e.detail.encryptedData) {
-      console.log(onGetAuthor)
       // 接收授权
       if (isFunction(onGetAuthor)) {
         onGetAuthor({ type: 'phone', detail: e.detail, status: 'success' })

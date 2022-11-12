@@ -1,7 +1,7 @@
 import { View, Text } from '@tarojs/components'
 import Item from '../Item'
 
-function Content ({ list }) {
+function Content ({ list, sumAmount }) {
   return (
     <View className='content-container'>
       <View className='title'>
@@ -12,9 +12,9 @@ function Content ({ list }) {
       </View>
       <View className='list'>
         {
-          list.map((item, idx) => {
+          list && list.map((item) => {
             return (
-              <Item data={item} key={idx} />
+              <Item data={item} key={item.productId} />
             )
           })
         }
@@ -23,7 +23,7 @@ function Content ({ list }) {
         <View className='total'>
           <Text className='txt'>总价</Text>
           <Text className='price-unit'>¥</Text>
-          <Text className='price-value'>50</Text>
+          <Text className='price-value'>{sumAmount}</Text>
         </View>
       </View>
     </View>

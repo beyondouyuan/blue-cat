@@ -56,6 +56,7 @@ class Content extends Component {
                 labelName='specName'
                 valueName='productSpecId'
                 checked={sizeChecked}
+                onChange={(v) => this.handleOnRadio(v, 'size')}
               />
             </View>
           )
@@ -69,6 +70,7 @@ class Content extends Component {
                 labelName='specName'
                 valueName='productSpecId'
                 checked={measureChecked}
+                onChange={(v) => this.handleOnRadio(v, 'measure')}
               />
             </View>
           )
@@ -82,6 +84,7 @@ class Content extends Component {
                 labelName='specName'
                 valueName='productSpecId'
                 checked={flavorChecked}
+                onChange={(v) => this.handleOnRadio(v, 'flavor')}
               />
             </View>
           )
