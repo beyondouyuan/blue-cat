@@ -78,7 +78,9 @@ class StorePage extends Component {
 
   componentWillUnmount() { }
 
-  componentDidShow() { }
+  componentDidShow() {
+    this.fetchShopCartList()
+  }
 
   componentDidHide() { }
 
@@ -156,9 +158,9 @@ class StorePage extends Component {
         const { $$materialsSource, consumeChecked } = this.state
         const $$initSource = initMaterialsSource(merchantProductSideVoList)
         const newSource = $$materialsSource.set('materials', $$initSource)
-        const sizeChecked = '' + specVoMap?.SIZE[0]?.productSpecId ?? ''
-        const measureChecked = '' + specVoMap?.MEASURE[0]?.productSpecId ?? ''
-        const flavorChecked = '' + specVoMap?.FLAVOR[0]?.productSpecId ?? ''
+        const sizeChecked = '' + specVoMap?.SIZE?.[0]?.productSpecId ?? ''
+        const measureChecked = '' + specVoMap?.MEASURE?.[0]?.productSpecId ?? ''
+        const flavorChecked = '' + specVoMap?.FLAVOR?.[0]?.productSpecId ?? ''
         this.setState({
           specVoMap,
           $$materialsSource: newSource,
@@ -186,6 +188,9 @@ class StorePage extends Component {
   handleSubmit() {
     const { storeInfo } = this.state
     const { tableId, dineNumber } = this.$instance.router.params
+    this.setState({
+      drawerVisible: false
+    })
     handleNavigateTo({
       path: '/pages/book/index',
       params: {
@@ -307,7 +312,8 @@ class StorePage extends Component {
     } = this.state
     const isPack = consumeChecked === '1'
     const totalPrice = Compute.mul(productPrice, productNumber)
-    const allPrice = Compute.add(totalPrice, packPrice)
+    const totalPackPrice = Compute.mul(packPrice, productNumber)
+    const allPrice = Compute.add(totalPrice, totalPackPrice)
     const specList = this.getSpecList()
     const params = {
       productId: currentProduct.merchantproductId,
@@ -365,11 +371,21 @@ class StorePage extends Component {
   }
 
   fetchShopCartList() {
+    const { shopCartLoading } = this.state
+    if (shopCartLoading) return
+    this.setState({
+      shopCartLoading: true
+    })
     requestShoppingCartList()
       .then(res => {
         const { shoppingCartList } = res
         this.setState({
           shoppingCartList
+        })
+      })
+      .finally(() => {
+        this.setState({
+          shopCartLoading: false
         })
       })
   }
@@ -391,9 +407,13 @@ class StorePage extends Component {
     cleanShoppingCart()
       .then(() => {
         this.setState({
-          shoppingCartList: [],
           drawerVisible: false
         })
+        setTimeout(() => {
+          this.setState({
+            shoppingCartList: []
+          })
+        }, 500)
       })
   }
 
@@ -407,8 +427,14 @@ class StorePage extends Component {
     }
     requestCreateShoppingCart(params)
       .then(() => {
-        this.fetchShopCartList()
+        // this.fetchShopCartList()
       })
+  }
+
+  handleSwitchMember() {
+    handleNavigateTo({
+      path: '/pages/member/index'
+    })
   }
 
   render() {
@@ -454,7 +480,9 @@ class StorePage extends Component {
             onPress={this.handlePress}
           />
           <View className='body'>
-            <Action />
+            <Action
+              onMember={this.handleSwitchMember}
+            />
             <View className='main'>
               <Sidebar sourceData={sidebarList} />
               <View className='list-wrapper'>

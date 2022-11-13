@@ -23,3 +23,27 @@ export function queryPhone(data) {
     bizType: 'userPhoneQuery'
   })
 }
+
+export function requestArea(data) {
+  return apiPost({
+    url: '/wechat/queryRegionInfo',
+    data,
+    bizType: 'queryRegionInfo'
+  })
+}
+
+export function createMember(data) {
+  return apiPost({
+    url: '/wechat/becomeMember',
+    data,
+    bizType: 'becomeMember'
+  })
+}
+
+export function requestMember(data) {
+  return apiPost({
+    url: '/wechat/memberDetail',
+    data,
+    bizType: 'memberDetail'
+  })
+}

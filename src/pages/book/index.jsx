@@ -105,7 +105,9 @@ class BookPage extends Component {
                 path: `/pages/result/index`,
                 params: {
                   orderId: productOrderId,
-                  status: 'cancel'
+                  status: 'cancel',
+                  merchantNum,
+                  amount: sumAmount
                 }
               })
               break
@@ -114,7 +116,9 @@ class BookPage extends Component {
                 path: `/pages/result/index`,
                 params: {
                   orderId: productOrderId,
-                  status: 'success'
+                  status: 'success',
+                  merchantNum,
+                  amount: sumAmount
                 }
               })
               break
@@ -123,7 +127,9 @@ class BookPage extends Component {
                 path: `/pages/result/index`,
                 params: {
                   orderId: productOrderId,
-                  status: 'fail'
+                  status: 'fail',
+                  merchantNum,
+                  amount: sumAmount
                 }
               })
               break

@@ -1,6 +1,6 @@
 import { Component } from 'react'
 import { View } from '@tarojs/components'
-import { handleNavigateTo } from '../../shared/navigator'
+import { handleRedirectTo } from '../../shared/navigator'
 import { getCurrentInstance } from '../../shared/get-instance'
 
 import './index.scss'
@@ -51,14 +51,14 @@ class ResultPage extends Component {
   }
 
   handleSwitchHome () {
-    handleNavigateTo({
+    handleRedirectTo({
       path: `/pages/store/index`
     })
   }
 
   handleSwitchOrder () {
     const { orderId } = this.$instance.router.params
-    handleNavigateTo({
+    handleRedirectTo({
       path: `/pages/order/index`,
       params: {
         orderId: orderId
@@ -67,11 +67,13 @@ class ResultPage extends Component {
   }
 
   handleSwitchPay () {
-    const { orderId } = this.$instance.router.params
-    handleNavigateTo({
+    const { orderId, merchantNum, amount } = this.$instance.router.params
+    handleRedirectTo({
       path: `/pages/pay/index`,
       params: {
-        orderId: orderId
+        orderId,
+        merchantNum,
+        amount
       }
     })
   }

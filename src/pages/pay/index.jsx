@@ -1,24 +1,120 @@
 import { Component } from 'react'
-import { View, Text } from '@tarojs/components'
+import { View } from '@tarojs/components'
+
+import { getCurrentInstance } from '../../shared/get-instance'
+import { hideLoading, showLoading } from '../../shared/loading'
+import { showToast } from '../../shared/toast'
+import { handleRedirectTo } from '../../shared/navigator'
+import { requestParams } from '../../service/order'
+import { handlePay } from '../../shared/pay'
 
 import './index.scss'
 
 
 class MemberPage extends Component {
-  componentWillReceiveProps (nextProps) {
-    console.log(this.props, nextProps)
+  constructor(props) {
+    super(props)
   }
 
-  componentWillUnmount () { }
+  componentDidMount() {
+    this.handleRetryPay()
+  }
 
-  componentDidShow () { }
+  componentWillUnmount() { }
 
-  componentDidHide () { }
+  componentDidShow() { }
 
-  render () {
+  componentDidHide() { }
+
+  $instance = getCurrentInstance()
+
+  async handleRetryPay() {
+    try {
+      showLoading({
+        title: '请稍后...'
+      })
+      const { orderId, merchantNum, amount } = this.$instance.router.params
+      const customParams = {
+        productOrderId: orderId,
+        appPayType: 'WXPAY',
+        payType: 'APPLET',
+        merchantNum,
+        amount
+      }
+      const customResult = await requestParams(customParams)
+      const parsePayInfo = JSON.parse(customResult.payInfo)
+      const payParams = {
+        timeStamp: parsePayInfo.timeStamp || Date.now().toString(),
+        nonceStr: parsePayInfo.nonceStr,
+        package: parsePayInfo.package,
+        paySign: parsePayInfo.paySign,
+        signType: parsePayInfo.signType,
+        appid: parsePayInfo.appId
+      }
+      const condition = {
+        ...payParams,
+        success: function (rs) {
+          showToast({
+            title: rs.errMsg === 'requestPayment:ok' ? '支付成功' : '支付成功'
+          })
+        },
+        fail: function (rs) {
+          showToast({
+            title: rs.errMsg === 'requestPayment:fail cancel' ? '取消支付' : '支付失败'
+          })
+        },
+        complete: (rs) => {
+          hideLoading()
+          switch (rs.errMsg) {
+            case 'requestPayment:fail cancel':
+              handleRedirectTo({
+                path: `/pages/result/index`,
+                params: {
+                  orderId: orderId,
+                  status: 'cancel',
+                  merchantNum,
+                  amount: amount
+                }
+              })
+              break
+            case 'requestPayment:ok':
+              handleRedirectTo({
+                path: `/pages/result/index`,
+                params: {
+                  orderId: orderId,
+                  status: 'success',
+                  merchantNum,
+                  amount: amount
+                }
+              })
+              break
+            default:
+              handleRedirectTo({
+                path: `/pages/result/index`,
+                params: {
+                  orderId: orderId,
+                  status: 'fail',
+                  merchantNum,
+                  amount: amount
+                }
+              })
+              break
+          }
+        }
+      }
+      handlePay(condition)
+    } catch (error) {
+      hideLoading()
+      showToast({
+        title: '支付失败'
+      })
+    }
+  }
+
+  render() {
     return (
       <View className='page-container member-page'>
-        <View><Text>支付</Text></View>
+        <View></View>
       </View>
     )
   }

@@ -1,5 +1,5 @@
 import { Component } from "react"
-import { View, Text } from '@tarojs/components'
+import { View, Text, ScrollView } from '@tarojs/components'
 import Item from "./Item"
 
 class Cart extends Component {
@@ -10,17 +10,24 @@ class Cart extends Component {
         <View className='action-bar' onClick={this.props.onClean}>
           <Text className='txt-h4 txt-secondary'>清空已选</Text>
         </View>
-        {
-          shoppingCartList && shoppingCartList.map(item => {
-            return (
-              <Item
-                key={item.productId}
-                data={item}
-                onCounter={this.props.onUpdate}
-              />
-            )
-          })
-        }
+        <ScrollView
+          className='cart-view'
+          scrollY
+          scrollWithAnimation
+          lowerThreshold={30}
+        >
+          {
+            shoppingCartList && shoppingCartList.map(item => {
+              return (
+                <Item
+                  key={item.productId}
+                  data={item}
+                  onCounter={this.props.onUpdate}
+                />
+              )
+            })
+          }
+        </ScrollView>
       </View>
     )
   }

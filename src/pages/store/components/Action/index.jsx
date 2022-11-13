@@ -1,6 +1,6 @@
 import { View, Text } from '@tarojs/components'
 
-function Action () {
+function Action ({onMember}) {
   return (
     <View className='action-container'>
       <View className='action-container__content'>
@@ -8,7 +8,7 @@ function Action () {
           <View><Text>查看门店信息</Text></View>
           <View><Text>更多</Text></View>
         </View>
-        <View className='nav'>
+        <View className='nav' onClick={onMember}>
           <Text>登录会员</Text>
         </View>
       </View>

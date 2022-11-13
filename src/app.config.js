@@ -7,6 +7,7 @@ export default defineAppConfig({
     'pages/result/index', // 支付结果
     'pages/record/index', // 订单列表
     'pages/order/index', // 订单详情
+    'pages/pay/index', // 重新支付中转页
     'pages/mine/index', // 个人中心
     'pages/member/index' // 会员
   ],
