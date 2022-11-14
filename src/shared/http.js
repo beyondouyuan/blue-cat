@@ -3,7 +3,7 @@ import { APP_ID } from './config'
 import { dencryptedDes, encryptedDes, encryptedRsa } from './security'
 import { getUserTokenCacheSync } from './user'
 
-const BASE_API = 'http://lanmaogo.891tech.com/lanmaogo-website/interface'
+const BASE_API = 'https://lanmaogo.891tech.com/lanmaogo-website/interface'
 
 /**
  * request封装

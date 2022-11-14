@@ -40,7 +40,10 @@ class BookPage extends Component {
   $instance = getCurrentInstance()
 
   fetchShopCartList() {
-    requestShoppingCartList()
+    const { tableId } = this.$instance.router.params
+    requestShoppingCartList({
+      tableId
+    })
       .then(res => {
         const { shoppingCartList, sumAmount } = res
         this.setState({

@@ -308,8 +308,10 @@ class StorePage extends Component {
       consumeChecked,
       productNumber,
       sideList,
-      packPrice
+      packPrice,
+      productConsumeType
     } = this.state
+    const { tableId } = this.$instance.router.params
     const isPack = consumeChecked === '1'
     const totalPrice = Compute.mul(productPrice, productNumber)
     const totalPackPrice = Compute.mul(packPrice, productNumber)
@@ -323,7 +325,9 @@ class StorePage extends Component {
       chooseSum: productNumber,
       productName: currentProduct.productName,
       sideList: sideList,
-      headUrl: currentProduct.headUrl
+      headUrl: currentProduct.headUrl,
+      tableId,
+      dabaoAmount: productConsumeType.price || 0
     }
     requestCreateShoppingCart(params)
       .then(() => {
@@ -372,11 +376,15 @@ class StorePage extends Component {
 
   fetchShopCartList() {
     const { shopCartLoading } = this.state
+    const { tableId } = this.$instance.router.params
+    const params = {
+      tableId: tableId || getTableCacheSync() || ''
+    }
     if (shopCartLoading) return
     this.setState({
       shopCartLoading: true
     })
-    requestShoppingCartList()
+    requestShoppingCartList(params)
       .then(res => {
         const { shoppingCartList } = res
         this.setState({
@@ -404,7 +412,11 @@ class StorePage extends Component {
   }
 
   handleCleanShopCart () {
-    cleanShoppingCart()
+    const { tableId } = this.$instance.router.params
+    const params = {
+      tableId: tableId || getTableCacheSync() || ''
+    }
+    cleanShoppingCart(params)
       .then(() => {
         this.setState({
           drawerVisible: false
@@ -420,9 +432,11 @@ class StorePage extends Component {
   handleUpdateShopCart (data, options) {
     const { shoppingCartId, productId } = data
     const { type } = options
+    const { tableId } = this.$instance.router.params
     const params = {
       shoppingCartId,
       productId,
+      tableId: tableId || getTableCacheSync() || '',
       operation: type === 'add'
     }
     requestCreateShoppingCart(params)
