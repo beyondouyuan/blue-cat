@@ -73,7 +73,7 @@ class Dialog extends Component {
 
   render() {
     const { isOpened } = this.state
-    const { title, content, cancelText, confirmText } = this.props
+    const { title, content, cancelText, confirmText, center = false  } = this.props
     const rootClass = isOpened ? 'base-dialog base-dialog-opened' : `base-dialog`
 
     if (title && content) {
@@ -90,7 +90,7 @@ class Dialog extends Component {
               </Header>
             </View>
             <View className='base-dialog-body'>
-              <Content>
+              <Content center={center}>
                 <Text>{content}</Text>
               </Content>
             </View>

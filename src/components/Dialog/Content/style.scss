@@ -1,6 +1,11 @@
-@import 'src/style/mixins/index.scss';
 
 .base-dialog__content {
   width: 100%;
   height: 100%;
+  &--center {
+    text-align: center;
+    .base-dialog__content__main {
+      text-align: center;
+    }
+  }
 }

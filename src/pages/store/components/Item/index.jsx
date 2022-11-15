@@ -14,17 +14,17 @@ function Item ({data, onPress}) {
               <Text>{data.productName}</Text>
             </View>
             <View className='desc'>
-              <Text>{data.introduce}</Text>
+              <Text>{data?.introduce ?? ''}</Text>
             </View>
             <View className='sales'>
-              <Text>{data.salenum}</Text>
+              <Text>{+data?.salenum > 0 ?? ''}</Text>
             </View>
           </View>
           <View className='action'>
             <View className='info'>
               <Text className='price-unit price-red'>¥</Text>
               <Text className='price-value price-red'>{data.price}</Text>
-              <Text>/份 起</Text>
+              <Text>/份起</Text>
             </View>
             <View className='select'>
               <BaseButton

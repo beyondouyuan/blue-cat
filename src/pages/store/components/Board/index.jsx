@@ -14,7 +14,11 @@ class Board extends Component {
       consumeChecked = '',
       productNumber,
       totalPrice = 0,
-      currentProduct = {}
+      currentProduct = {},
+      sizeName = '',
+      measureName = '',
+      flavorName = '',
+      consumeName = ''
     } = this.props
     return (
       <View className='board-container'>
@@ -33,7 +37,11 @@ class Board extends Component {
         <Footer
           data={{
             productNumber,
-            totalPrice
+            totalPrice,
+            sizeName,
+            measureName,
+            flavorName,
+            consumeName
           }}
           onAddCart={this.props.onAddCart}
           onCounter={this.props.onCounter}

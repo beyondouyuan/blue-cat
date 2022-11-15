@@ -5,7 +5,7 @@ function Tabar (props) {
     <View className='tabar-container'>
       <View className='tabar-container__content'>
         <View className='info'>
-          <View><Text>桌号{props.desk}</Text>|{props.number}人就餐</View>
+          <View><Text>桌号{props.tableName}</Text>|{props.number}人就餐</View>
         </View>
         <View className='nav'>
           <View onClick={props.onPress}><Text>我的</Text></View>

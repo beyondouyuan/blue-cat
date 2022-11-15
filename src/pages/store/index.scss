@@ -288,6 +288,7 @@
         width: 180px;
         height: 180px;
         border-radius: $border-radius-lg;
+        background-color: rgba($background-gray, .3);
 
         .image {
           width: 100%;
@@ -335,12 +336,13 @@
           align-items: center;
           flex-wrap: wrap;
           margin-bottom: 30px;
+          justify-content: space-between;
         }
 
         &--item {
           position: relative;
-          flex: 1;
-          width: 0;
+          // flex: 1;
+          width: calc(50% - 10px);
           padding: 10px;
           font-size: $font-size-sm;
           box-sizing: border-box;
@@ -367,9 +369,9 @@
           border-radius: $border-radius-lg;
           background-color: $background-secondary;
 
-          &:not(:last-child) {
-            margin-right: 30px;
-          }
+          // &:not(:last-child) {
+          //   margin-right: 30px;
+          // }
 
           &-active {
             border-color: rgba($color: $primary, $alpha: .4);
@@ -431,14 +433,12 @@
     width: 100%;
     min-height: 24vh;
     max-height: 70vh;
-    // overflow: hidden;
+    position: relative;
     background-color: $background-white;
-    display: flex;
-    flex-direction: column;
 
     .cart-view {
-      flex: 1;
       padding: 20px;
+      padding-bottom: 100px;
       box-sizing: border-box;
       background-color: $background-white;
     }
@@ -449,11 +449,17 @@
       display: flex;
       align-items: center;
       justify-content: flex-end;
+      position: sticky;
+      top: 0;
+      left: 0;
+      z-index: 100;
+      background-color: $background-white;
     }
 
     .cart-item {
       display: flex;
       align-items: stretch;
+      margin-bottom: 20px;
       .cart-body {
         flex: 1;
         display: flex;

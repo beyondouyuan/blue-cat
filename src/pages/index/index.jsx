@@ -9,7 +9,9 @@ import { handleNavigateTo } from '../../shared/navigator'
 import { getAuthorize, getCode, getUserInfo } from '../../shared/login'
 import { requestLogin } from '../../service/user'
 import { getUserTokenCacheSync, setUserInfoCacheSync, setUserTokenCacheSync } from '../../shared/user'
-import { setTableCacheSync } from '../../shared/global'
+import { setMerchantCacheSync } from '../../shared/global'
+import { requestMerchantTable } from '../../service/store'
+
 
 const dines = Array.from(new Array(10), (val, index) => {
   return {
@@ -24,15 +26,19 @@ class IndexPage extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      dineNumber: 1,
-      tableId: '7'
+      peopleNum: 1,
+      tableId: '7',
+      storeInfo: {},
+      disabled: true
     }
 
     this.handleNumberChange = this.handleNumberChange.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this)
+    this.handleFetchData = this.handleFetchData.bind(this)
   }
   componentDidMount () {
     this.handleLogin()
+    this.handleFetchData()
   }
 
   // componentWillReceiveProps (nextProps) {
@@ -77,33 +83,60 @@ class IndexPage extends Component {
         }
         setUserInfoCacheSync(userInfoData)
         setUserTokenCacheSync(userToken)
+        this.handleFetchData()
       })
       .catch(e => {
         console.log('e', e.code)
       })
   }
 
+  async handleFetchData() {
+    const token = getUserTokenCacheSync()
+    if (!token) return
+    try {
+      const { tableId } = this.state
+      const params = {
+        tableId: tableId
+      }
+      const storeInfo = await requestMerchantTable(params)
+      this.setState({
+        storeInfo,
+        disabled: false
+      })
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   handleNumberChange (v) {
     // if (v === 10) {}
     this.setState({
-      dineNumber: v
+      peopleNum: v
     })
   }
 
   handleSubmit () {
-    const { tableId, dineNumber } = this.state
-    setTableCacheSync(tableId)
+    const { tableId, peopleNum, storeInfo } = this.state
+    setMerchantCacheSync({
+      ...storeInfo,
+      peopleNum,
+      peoplePrice: 1
+    })
     handleNavigateTo({
       path: '/pages/store/index',
       params: {
         tableId,
-        dineNumber
+        peopleNum,
+        tableName: storeInfo.tableNane,
+        merchantNum: storeInfo.merchantNum,
+        peoplePrice: 1,
+        payTag: storeInfo.payTag
       }
     })
   }
 
   render () {
-    const { dineNumber } = this.state
+    const { peopleNum, disabled } = this.state
     return (
       <View className='page-container index-page'>
         <View className='container'>
@@ -134,7 +167,7 @@ class IndexPage extends Component {
                         group.map(item => {
                           const rootClassName = 'number--item'
                           const classObject = {
-                            'number--item-active': dineNumber === item.value
+                            'number--item-active': peopleNum === item.value
                           }
                           return (
                             <View
@@ -157,7 +190,7 @@ class IndexPage extends Component {
               }
             </View>
             <View className='submit'>
-              <BaseButton full circle onClick={this.handleSubmit.bind(this)}>
+              <BaseButton full circle disabled={disabled} onClick={this.handleSubmit.bind(this)}>
                 <Text>开始点餐</Text>
               </BaseButton>
             </View>

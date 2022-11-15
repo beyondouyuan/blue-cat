@@ -1,11 +1,11 @@
 import { View, Text } from '@tarojs/components'
 import Item from '../Item'
 
-function Content ({ list, sumAmount }) {
+function Content ({ list, sumAmount, tableName }) {
   return (
     <View className='content-container'>
       <View className='title'>
-        <Text>桌号B10</Text>
+        <Text>桌号{tableName}</Text>
       </View>
       <View className='tips'>
         <Text>待下单</Text>

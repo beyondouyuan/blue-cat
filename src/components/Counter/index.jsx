@@ -11,16 +11,14 @@ class BaseCounter extends Component {
       _counter: 0
     }
   }
-  componentDidMount () {
-    const { counter } = this.props
-    this.setState({
-      _counter: +counter
-    })
+  static getDerivedStateFromProps(props) {
+    return {_counter: +props.counter };
   }
 
-  UNSAFE_componentWillReceiveProps (nextProps) {
+  componentWillReceiveProps (nextProps) {
     const { counter } = nextProps
-    if (counter !== this.state._counter) {
+    if (+counter !== this.state._counter) {
+      console.log(`counter => ${counter}`)
       this.setState({
         _counter: +counter
       })

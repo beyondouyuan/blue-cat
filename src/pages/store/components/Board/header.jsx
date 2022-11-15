@@ -4,14 +4,14 @@ function Header({ data }) {
   return (
     <View className='header-container'>
       <View className='logo'>
-        <Image className='image' src={data?.src ?? ''} />
+        <Image className='image' src={data?.headurl ?? ''} />
       </View>
       <View className='content'>
         <View className='title'>
           <Text>{data?.productName ?? ''}</Text>
         </View>
         <View className='desc'>
-          <Text>{data?.productName ?? ''}</Text>
+          <Text>{data?.introduce ?? ''}</Text>
         </View>
       </View>
     </View>

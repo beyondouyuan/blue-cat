@@ -5,7 +5,7 @@ function Item ({ data }) {
     <View className='item-container'>
       <View className='item-container__content'>
         <View className='foods'>
-          <Image className='image' src={data.url} />
+          <Image className='image' src={data?.headurl ?? ''} />
         </View>
         <View className='product'>
           <View className='header'>

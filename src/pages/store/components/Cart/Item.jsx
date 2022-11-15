@@ -1,11 +1,13 @@
-import { View, Text } from '@tarojs/components'
+import { View, Text, Image } from '@tarojs/components'
 import BaseCounter from '../../../../components/Counter'
 
 function Item ({ data, onCounter }) {
   return (
     <View className='cart-item'>
       <View className='cart-body'>
-        <View className='image'></View>
+        <View className='image'>
+          <Image className='image' src={data?.headurl ?? ''} />
+        </View>
         <View className='content'>
           <View className='title txt-h3'>
             <Text>{ data.productName }</Text>

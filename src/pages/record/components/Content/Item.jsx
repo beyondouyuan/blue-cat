@@ -26,18 +26,14 @@ function Item({ data, onPress }) {
               }
             </View>
 
-            {
-              shiftData && (
-                <View className='remark'>
-                  <View>
-                    <Text className='txt-h3'>{shiftData.productName}</Text>
-                  </View>
-                  <View>
-                    <Text className='txt-h4 txt-secondary'>{shiftData.introduce}</Text>
-                  </View>
-                </View>
-              )
-            }
+            <View className='remark'>
+              <View>
+                <Text className='txt-h3'>{data?.productName ?? '产品名称'}</Text>
+              </View>
+              <View>
+                <Text className='txt-h4 txt-secondary'>{data?.introduce ?? '产品介绍'}</Text>
+              </View>
+            </View>
           </View>
           <View className='total-price'>
             <Text className='price-unit'>¥</Text>

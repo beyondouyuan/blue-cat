@@ -31,7 +31,7 @@ class Content extends Component {
 
   handleScrollCallback(e) {
     let show = false
-    if (e.detail.scrollTop > 80) {
+    if (e.detail.scrollTop > 200) {
       // 显示搜索框
       show = true
     } else {

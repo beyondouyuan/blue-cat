@@ -1,11 +1,11 @@
 import { getCacheSync, setCacheSync } from "./storage";
 
-const LOCAL_TABLE_ID = 'LOCAL_TABLE_ID'
+const LOCAL_MERCHANT_CACHE = 'LOCAL_MERCHANT_CACHE'
 
-export function setTableCacheSync(v) {
-  setCacheSync(LOCAL_TABLE_ID, v)
+export function setMerchantCacheSync(v) {
+  setCacheSync(LOCAL_MERCHANT_CACHE, v)
 }
 
-export function getTableCacheSync() {
-  return getCacheSync(LOCAL_TABLE_ID) || null
+export function getMerchantCacheSync() {
+  return getCacheSync(LOCAL_MERCHANT_CACHE) || null
 }

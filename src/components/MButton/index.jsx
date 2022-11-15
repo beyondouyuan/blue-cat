@@ -28,7 +28,8 @@ class MButton extends Component {
     this.handleGetPhone = this.handleGetPhone.bind(this)
   }
   handleGetPhone (e) {
-    const { onGetAuthor } = this.props
+    const { onGetAuthor, disabled } = this.props
+    if (disabled) return
     if (e.detail.encryptedData) {
       // 接收授权
       if (isFunction(onGetAuthor)) {

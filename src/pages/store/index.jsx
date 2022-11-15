@@ -14,11 +14,11 @@ import { handleNavigateTo } from '../../shared/navigator'
 import { getCurrentInstance } from '../../shared/get-instance'
 
 import './index.scss'
-import { cleanShoppingCart, requestCreateShoppingCart, requestMerchantTable, requestProductDimension, requestProductList, requestShoppingCartList } from '../../service/store'
+import { cleanShoppingCart, requestCreateShoppingCart, requestProductDimension, requestProductList, requestShoppingCartList } from '../../service/store'
 import { queryPhone, requestPhone } from '../../service/user'
 import { initSourceData, initMaterialsSource, updateMaterialsSource } from '../../shared/cart'
 import Compute from '../../shared/compute'
-import { getTableCacheSync } from '../../shared/global'
+import { getMerchantCacheSync } from '../../shared/global'
 
 const cate = [{
   value: '1',
@@ -37,7 +37,6 @@ class StorePage extends Component {
       currentProduct: {},
       productPrice: 0,
       productNumber: 1,
-      storeInfo: {},
       sidebarList: [],
       productList: [],
       specVoMap: {},
@@ -51,7 +50,11 @@ class StorePage extends Component {
       packPrice: 0,
       shoppingCartList: [],
       showType: 'select',
-      productConsumeType: {}
+      productConsumeType: {},
+      sizeName: '',
+      measureName: '',
+      flavorName: '',
+      consumeName: '堂食'
     }
     this.handleOnScroll = this.handleOnScroll.bind(this)
     this.handleCloseDrawer = this.handleCloseDrawer.bind(this)
@@ -72,7 +75,7 @@ class StorePage extends Component {
 
   componentDidMount() {
     this.handleQueryPhone()
-    this.handleFetchData()
+    this.handleFetchProduct()
     this.fetchShopCartList()
   }
 
@@ -85,6 +88,7 @@ class StorePage extends Component {
   componentDidHide() { }
 
   $instance = getCurrentInstance()
+  $merchantCache = getMerchantCacheSync() || {}
 
   handleQueryPhone() {
     queryPhone()
@@ -95,28 +99,10 @@ class StorePage extends Component {
       })
   }
 
-  async handleFetchData() {
-    try {
-      const { tableId, dineNumber } = this.$instance.router.params
-      const params = {
-        tableId: tableId || getTableCacheSync() || ''
-      }
-      const storeInfo = await requestMerchantTable(params)
-      this.setState({
-        storeInfo: storeInfo,
-        dineNumber: dineNumber
-      }, () => {
-        this.handleFetchProduct()
-      })
-    } catch (error) {
-      console.log(error)
-    }
-  }
-
   handleFetchProduct() {
-    const { storeInfo } = this.state
+    const { merchantNum } = this.$instance.router.params
     const params = {
-      merchantNum: storeInfo.merchantNum
+      merchantNum: merchantNum || this.$merchantCache.merchantNum
     }
     requestProductList(params)
       .then(res => {
@@ -161,42 +147,52 @@ class StorePage extends Component {
         const sizeChecked = '' + specVoMap?.SIZE?.[0]?.productSpecId ?? ''
         const measureChecked = '' + specVoMap?.MEASURE?.[0]?.productSpecId ?? ''
         const flavorChecked = '' + specVoMap?.FLAVOR?.[0]?.productSpecId ?? ''
+        const sizeName = specVoMap?.SIZE?.[0]?.specName ?? ''
+        const measureName = specVoMap?.MEASURE?.[0]?.specName ?? ''
+        const flavorName = specVoMap?.FLAVOR?.[0]?.specName ?? ''
         this.setState({
           specVoMap,
           $$materialsSource: newSource,
           sizeChecked,
           measureChecked,
           flavorChecked,
-          productConsumeType
+          productConsumeType,
+          sizeName,
+          measureName,
+          flavorName
         }, () => {
           const specListPrice = this.getSpecListPrice()
           let productPrice = Compute.add(specListPrice, data.price)
           let packPrice = 0
+          let consumeName = '堂食'
           if (consumeChecked === '1') {
             packPrice = +productConsumeType['price'] || 0
+            consumeName = '打包'
           }
           this.setState({
             drawerVisible: true,
             productPrice,
             packPrice,
-            basePrice: productPrice
+            basePrice: productPrice,
+            consumeName
           })
         })
       })
   }
 
   handleSubmit() {
-    const { storeInfo } = this.state
-    const { tableId, dineNumber } = this.$instance.router.params
+    const { tableId, peopleNum, merchantNum, tableName, peoplePrice } = this.$instance.router.params
     this.setState({
       drawerVisible: false
     })
     handleNavigateTo({
       path: '/pages/book/index',
       params: {
-        tableId: tableId || getTableCacheSync() || '',
-        dineNumber,
-        merchantNum: storeInfo.merchantNum
+        tableId: tableId || this.$merchantCache?.tableId || '',
+        peopleNum: peopleNum || this.$merchantCache?.peopleNum || '',
+        merchantNum: merchantNum || this.$merchantCache?.merchantNum || '',
+        tableName: tableName || this.$merchantCache?.tableNane || '',
+        peoplePrice: peoplePrice || this.$merchantCache?.peoplePrice || ''
       }
     })
   }
@@ -363,22 +359,50 @@ class StorePage extends Component {
       pack: 'consumeChecked'
     }
     const change = options[type]
+    const {
+      specVoMap
+    } = this.state
+    const maps = {
+      size: {
+        source: 'SIZE',
+        name: 'sizeName'
+      },
+      measure: {
+        source: 'MEASURE',
+        name: 'measureName',
+      },
+      flavor: {
+        source: 'FLAVOR',
+        name: 'flavorName'
+      }
+    }
+    const target = specVoMap[maps[type]?.source]
+    const selected = target?.find((item) => {
+      return '' + item.productSpecId === '' + v
+    })
+    const name = maps[type]?.name ?? ''
     this.setState({
       [change]: '' + v
     })
+    if (type !== 'pack' && name) {
+      this.setState({
+        [name]: selected.specName
+      })
+    }
     if (type === 'pack') {
       const { productConsumeType } = this.state
       this.setState({
-        packPrice: v === '1' ? productConsumeType['price'] : 0
+        packPrice: v === '1' ? productConsumeType['price'] : 0,
+        consumeName: v === '1' ? '打包' : '堂食',
       })
     }
   }
 
   fetchShopCartList() {
-    const { shopCartLoading } = this.state
+    const { shopCartLoading, showType, drawerVisible } = this.state
     const { tableId } = this.$instance.router.params
     const params = {
-      tableId: tableId || getTableCacheSync() || ''
+      tableId: tableId || this.$merchantCache.tableId || ''
     }
     if (shopCartLoading) return
     this.setState({
@@ -387,6 +411,11 @@ class StorePage extends Component {
     requestShoppingCartList(params)
       .then(res => {
         const { shoppingCartList } = res
+        if (!shoppingCartList.length && showType === 'cart' && drawerVisible) {
+          this.setState({
+            drawerVisible: false
+          })
+        }
         this.setState({
           shoppingCartList
         })
@@ -414,7 +443,7 @@ class StorePage extends Component {
   handleCleanShopCart () {
     const { tableId } = this.$instance.router.params
     const params = {
-      tableId: tableId || getTableCacheSync() || ''
+      tableId: tableId || this.$merchantCache.tableId || ''
     }
     cleanShoppingCart(params)
       .then(() => {
@@ -436,12 +465,12 @@ class StorePage extends Component {
     const params = {
       shoppingCartId,
       productId,
-      tableId: tableId || getTableCacheSync() || '',
+      tableId: tableId || this.$merchantCache.tableId || '',
       operation: type === 'add'
     }
     requestCreateShoppingCart(params)
       .then(() => {
-        // this.fetchShopCartList()
+        this.fetchShopCartList()
       })
   }
 
@@ -455,7 +484,6 @@ class StorePage extends Component {
     const {
       showSearch,
       drawerVisible,
-      storeInfo,
       sidebarList,
       productList,
       specVoMap,
@@ -467,25 +495,29 @@ class StorePage extends Component {
       productPrice,
       $$materialsSource,
       currentProduct,
-      dineNumber,
       phoneInfo,
       shoppingCartList,
       showType,
       productConsumeType,
-      packPrice
+      packPrice,
+      sizeName,
+      measureName,
+      flavorName,
+      consumeName
     } = this.state
     const cartNum = shoppingCartList.length || 0
     const materialsSource = $$materialsSource.get('materials')
+    const { tableNane, peopleNum } = this.$merchantCache
     const info = {
-      desk: storeInfo.tableNane,
-      number: dineNumber,
+      tableName: tableNane,
+      number: peopleNum,
       showSearch
     }
     const submitClass = showType === 'cart' ? 'hight' : ''
     const allPrice = Compute.add(productPrice, packPrice)
-    // const style = {
-    //   marginTop: showSearch ? '-70px' : '0px'
-    // }
+    const style = {
+      marginTop: showSearch ? '-70px' : '0px'
+    }
     return (
       <View className='page-container store-page'>
         <View className='container'>
@@ -493,7 +525,7 @@ class StorePage extends Component {
             {...info}
             onPress={this.handlePress}
           />
-          <View className='body'>
+          <View className='body' style={style}>
             <Action
               onMember={this.handleSwitchMember}
             />
@@ -548,6 +580,10 @@ class StorePage extends Component {
                   productNumber={productNumber}
                   totalPrice={allPrice}
                   currentProduct={currentProduct}
+                  sizeName={sizeName}
+                  measureName={measureName}
+                  flavorName={flavorName}
+                  consumeName={consumeName}
                 />
               )
             }

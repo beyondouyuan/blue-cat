@@ -13,7 +13,26 @@ function Footer({ data, onAddCart, onCounter }) {
             <Text className='txt-h4 txt-secondary'>/份</Text>
           </View>
           <View className='desc txt-h3'>
-            <Text>中份</Text>/<Text>堂食</Text>
+            {
+              data.sizeName && (
+                <Text>{data.sizeName}/</Text>
+              )
+            }
+            {
+              data.measureName && (
+                <Text>{data.measureName}/</Text>
+              )
+            }
+            {
+              data.flavorName && (
+                <Text>{data.flavorName}/</Text>
+              )
+            }
+            {
+              data.consumeName && (
+                <Text>{data.consumeName}</Text>
+              )
+            }
           </View>
         </View>
         <View className='goods-counter'>

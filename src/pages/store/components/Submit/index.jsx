@@ -4,14 +4,16 @@ import classNames from 'classnames'
 import BaseButton from '../../../../components/Button'
 import MButton from '../../../../components/MButton'
 
-function Submit ({ onGetAuthor, phoneInfo = {}, onPress, onShowCart ,cartNum = 0, className }) {
+function Submit ({ onGetAuthor, phoneInfo = {}, onPress, onShowCart, cartNum = 0, className }) {
+  const disabled = !cartNum
   const buttonProps = {
     openType: 'getPhoneNumber',
     size: 'mini',
     type: 'primary',
     circle: true,
     full: true,
-    'hover-class': 'none'
+    'hover-class': 'none',
+    disabled
   }
   const rootClass = 'submit-container'
   return (
@@ -34,7 +36,7 @@ function Submit ({ onGetAuthor, phoneInfo = {}, onPress, onShowCart ,cartNum = 0
         <View className='submit'>
           {
             phoneInfo.phoneTag ? (
-              <BaseButton size='middle' circle onClick={onPress}>选好了</BaseButton>
+              <BaseButton size='middle' circle disabled={disabled} onClick={onPress}>选好了</BaseButton>
             ) : (
               <MButton
                 text='选好了'
