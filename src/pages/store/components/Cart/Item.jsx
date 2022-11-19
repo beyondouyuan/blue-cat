@@ -6,7 +6,7 @@ function Item ({ data, onCounter }) {
     <View className='cart-item'>
       <View className='cart-body'>
         <View className='image'>
-          <Image className='image' src={data?.headurl ?? ''} />
+          <Image className='image' src={data?.headUrl ?? ''} />
         </View>
         <View className='content'>
           <View className='title txt-h3'>

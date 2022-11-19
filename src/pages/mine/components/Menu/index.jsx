@@ -1,8 +1,11 @@
 import { View, Text } from '@tarojs/components'
+import BaseIcon from '../../../../components/Icon'
 
 const menus = [{
   path: '/pages/record/index',
-  label: '我的订单'
+  label: '我的订单',
+  icon: 'icon-order',
+  className: 'menu-icon menu-icon--order'
 }]
 
 function Menu({onPress}) {
@@ -16,7 +19,15 @@ function Menu({onPress}) {
               key={item.path}
               onClick={() => onPress(item)}
             >
-              <Text className='txt-h3'>{item.label}</Text>
+              <View className={item.className}>
+                <BaseIcon name={item.icon} />
+              </View>
+              <View className='label'>
+                <Text className='txt-h3'>{item.label}</Text>
+              </View>
+              <View className='menu-icon menu-icon--arrow'>
+                <BaseIcon name='icon-arrow' />
+              </View>
             </View>
           )
         })

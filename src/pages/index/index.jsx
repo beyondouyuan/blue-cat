@@ -119,8 +119,7 @@ class IndexPage extends Component {
     const { tableId, peopleNum, storeInfo } = this.state
     setMerchantCacheSync({
       ...storeInfo,
-      peopleNum,
-      peoplePrice: 1
+      peopleNum
     })
     handleNavigateTo({
       path: '/pages/store/index',
@@ -129,7 +128,6 @@ class IndexPage extends Component {
         peopleNum,
         tableName: storeInfo.tableNane,
         merchantNum: storeInfo.merchantNum,
-        peoplePrice: 1,
         payTag: storeInfo.payTag
       }
     })

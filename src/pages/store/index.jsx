@@ -181,7 +181,7 @@ class StorePage extends Component {
   }
 
   handleSubmit() {
-    const { tableId, peopleNum, merchantNum, tableName, peoplePrice } = this.$instance.router.params
+    const { tableId, peopleNum, merchantNum, tableName } = this.$instance.router.params
     this.setState({
       drawerVisible: false
     })
@@ -191,8 +191,7 @@ class StorePage extends Component {
         tableId: tableId || this.$merchantCache?.tableId || '',
         peopleNum: peopleNum || this.$merchantCache?.peopleNum || '',
         merchantNum: merchantNum || this.$merchantCache?.merchantNum || '',
-        tableName: tableName || this.$merchantCache?.tableNane || '',
-        peoplePrice: peoplePrice || this.$merchantCache?.peoplePrice || ''
+        tableName: tableName || this.$merchantCache?.tableNane || ''
       }
     })
   }
@@ -321,8 +320,8 @@ class StorePage extends Component {
       chooseSum: productNumber,
       productName: currentProduct.productName,
       sideList: sideList,
-      headUrl: currentProduct.headUrl,
-      tableId,
+      headUrl: currentProduct.headurl,
+      tableId: tableId || this.$merchantCache.tableId || '',
       dabaoAmount: productConsumeType.price || 0
     }
     requestCreateShoppingCart(params)
@@ -524,6 +523,7 @@ class StorePage extends Component {
           <Tabar
             {...info}
             onPress={this.handlePress}
+            onMember={this.handleSwitchMember}
           />
           <View className='body' style={style}>
             <Action

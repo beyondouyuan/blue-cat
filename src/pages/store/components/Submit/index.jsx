@@ -3,6 +3,7 @@ import classNames from 'classnames'
 
 import BaseButton from '../../../../components/Button'
 import MButton from '../../../../components/MButton'
+import BaseIcon from '../../../../components/Icon'
 
 function Submit ({ onGetAuthor, phoneInfo = {}, onPress, onShowCart, cartNum = 0, className }) {
   const disabled = !cartNum
@@ -16,6 +17,10 @@ function Submit ({ onGetAuthor, phoneInfo = {}, onPress, onShowCart, cartNum = 0
     disabled
   }
   const rootClass = 'submit-container'
+  const cartClass = 'shop-icon'
+  const cartActive = {
+    'shop-icon--active': cartNum
+  }
   return (
     <View className={classNames(rootClass, className)}>
       <View
@@ -26,7 +31,10 @@ function Submit ({ onGetAuthor, phoneInfo = {}, onPress, onShowCart, cartNum = 0
           e.stopPropagation()
         }}
       >
-        <View className='shop'>
+        <View className={classNames(cartClass, cartActive)}>
+          <BaseIcon name='icon-cart' />
+        </View>
+        <View className='shop-content'>
           {
             cartNum ? (
               <Text>已选购{cartNum}件物品</Text>

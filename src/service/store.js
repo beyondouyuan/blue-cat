@@ -47,3 +47,11 @@ export function cleanShoppingCart(data) {
     bizType: 'deleteShoppingCart'
   })
 }
+
+export function requestOrderShoppingCartList(data) {
+  return apiPost({
+    url: '/wechat/queryOrderShoppingCartList',
+    data,
+    bizType: 'queryOrderShoppingCartList'
+  })
+}

@@ -8,14 +8,14 @@ import Submit from './components/Submit'
 import { handleNavigateTo, handleRedirectTo } from '../../shared/navigator'
 import { getCurrentInstance } from '../../shared/get-instance'
 
-import { requestShoppingCartList } from '../../service/store'
+import { requestOrderShoppingCartList, requestShoppingCartList } from '../../service/store'
 
 import './index.scss'
 import { hideLoading, showLoading } from '../../shared/loading'
 import { showToast } from '../../shared/toast'
 import { requestCreateOrder, requestParams } from '../../service/order'
 import { handlePay } from '../../shared/pay'
-import { getMerchantCacheSync } from '../../shared/global'
+import { getMerchantCacheSync, getOrderIdCacheSync, setOrderIdCacheSync } from '../../shared/global'
 
 
 class BookPage extends Component {
@@ -33,6 +33,8 @@ class BookPage extends Component {
     this.handleSubmit = this.handleSubmit.bind(this)
     this.handleOpenDialog = this.handleOpenDialog.bind(this)
     this.handleCloseDialog = this.handleCloseDialog.bind(this)
+    this.handleOrderPay = this.handleOrderPay.bind(this)
+    this.handlePressConfirm = this.handlePressConfirm.bind(this)
   }
 
 
@@ -56,17 +58,32 @@ class BookPage extends Component {
   }
 
   fetchShopCartList() {
+    const { payTag } = this.$merchantCache
+    const orderIdCache = getOrderIdCacheSync()
     const { tableId } = this.$instance.router.params
     const condition = {
       tableId
     }
-    requestShoppingCartList(condition)
+    let type = 'default'
+    const action = {
+      default: requestShoppingCartList,
+      order: requestOrderShoppingCartList
+    }
+    if (payTag && orderIdCache) {
+      type = 'order'
+      condition['productOrderId'] = orderIdCache
+      delete condition['tableId']
+    }
+    action[type](condition)
       .then(res => {
         const { shoppingCartList, sumAmount } = res
         this.setState({
           shoppingCartList,
           sumAmount
         })
+      })
+      .catch(e => {
+        console.log('e', e.code)
       })
   }
 
@@ -77,26 +94,26 @@ class BookPage extends Component {
   }
 
   handleCreateOrder() {
-    const { tableId, peopleNum, peoplePrice } = this.$instance.router.params
+    const { tableId, peopleNum } = this.$instance.router.params
     const params = {
       tableId,
-      peopleNum,
-      peoplePrice
+      peopleNum
     }
     return requestCreateOrder(params)
   }
 
   async handleOrderPay() {
     const { sumAmount, productOrderId } = this.state
+    // if (!productOrderId) return
     const { merchantNum } = this.$instance.router.params
-    const customParams = {
+    const params = {
       productOrderId,
       appPayType: 'WXPAY',
       payType: 'APPLET',
       merchantNum,
       amount: sumAmount
     }
-    const customResult = await requestParams(customParams)
+    const customResult = await requestParams(params)
     const parsePayInfo = JSON.parse(customResult.payInfo)
     const payParams = {
       timeStamp: parsePayInfo.timeStamp || Date.now().toString(),
@@ -187,6 +204,7 @@ class BookPage extends Component {
       }, productOrderId)
       // 弹窗询问：若是先下单，再支付，在创建预支付单成功后弹窗询问是否立即支付
       if (payTag) {
+        setOrderIdCacheSync(productOrderId)
         this.handleOpenDialog()
         hideLoading()
         return
@@ -202,6 +220,7 @@ class BookPage extends Component {
   }
 
   handlePressConfirm () {
+    console.log('ah')
     this.handleOrderPay()
   }
 
