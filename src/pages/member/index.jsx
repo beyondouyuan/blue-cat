@@ -52,6 +52,7 @@ class MemberPage extends Component {
       cityTarget: {},
       countyTarget: {},
       fetchType: '', // province|city|county
+      memberNum: ''
     }
     this.handleDateChange = this.handleDateChange.bind(this)
     this.handleCloseDrawer = this.handleCloseDrawer.bind(this)
@@ -60,6 +61,7 @@ class MemberPage extends Component {
     this.handleFetchArea = this.handleFetchArea.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this)
     this.handleChange = this.handleChange.bind(this)
+    this.handleFetchData = this.handleFetchData.bind(this)
   }
 
   componentDidMount () {
@@ -75,7 +77,22 @@ class MemberPage extends Component {
   handleFetchData () {
     requestMember()
       .then(res => {
-        console.log(res)
+        const {
+          phone,
+          realAddress,
+          userName,
+          userSexType,
+          birthDate,
+          memberNum
+        } = res
+        this.setState({
+          phone,
+          realAddress,
+          userName,
+          userSexType,
+          birthDate,
+          memberNum
+        })
       })
   }
 
@@ -169,7 +186,8 @@ class MemberPage extends Component {
       realAddress,
       userSexType,
       countyCode,
-      phone
+      phone,
+      memberNum
     } = this.state
     const params = {
       userName,
@@ -178,6 +196,10 @@ class MemberPage extends Component {
       userSexType,
       phone,
       regionCode: countyCode
+    }
+    // 编辑
+    if (memberNum) {
+      params['memberNum'] = memberNum
     }
     createMember(params)
       .then(res => {
@@ -281,9 +303,11 @@ class MemberPage extends Component {
             </View>
           </View>
         </View>
-        <BaseButton full circle onClick={this.handleSubmit}>
-          <Text>加入会员</Text>
-        </BaseButton>
+        <View className='submit-container'>
+          <BaseButton full circle onClick={this.handleSubmit}>
+            <Text>加入会员</Text>
+          </BaseButton>
+        </View>
         <Drawer
           show={drawerVisible}
           onClose={this.handleCloseDrawer}

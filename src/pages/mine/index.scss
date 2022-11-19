@@ -38,7 +38,7 @@
 
   .menu-container {
     width: 94%;
-    padding: 20px;
+    padding: 10px;
     box-sizing: border-box;
     margin: 40px auto;
     border-radius: $border-radius-xl;
@@ -64,6 +64,7 @@
           color: $primary;
         }
         &--arrow {
+          color: $text-secondary-color;
           transform: rotate(-90deg);
         }
       }

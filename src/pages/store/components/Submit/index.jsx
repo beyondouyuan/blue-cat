@@ -27,13 +27,14 @@ function Submit ({ onGetAuthor, phoneInfo = {}, onPress, onShowCart, cartNum = 0
       <View
         className='submit-container__content'
         onClick={(e) => {
-          onShowCart(e)
           e.preventDefault()
           e.stopPropagation()
+          if (disabled) return
+          onShowCart(e)
         }}
       >
         <View className={classNames(cartClass, cartActive)}>
-          <BaseIcon name='icon-cart' />
+          <BaseIcon name='icon-cart' size={24} />
         </View>
         <View className='shop-content'>
           {

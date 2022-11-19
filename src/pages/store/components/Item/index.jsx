@@ -4,7 +4,14 @@ import BaseButton from '../../../../components/Button'
 function Item ({data, onPress}) {
   return (
     <View className='item-container'>
-      <View className='item-container__content'>
+      <View
+        className='item-container__content'
+        onClick={(e) => {
+          onPress(e, data)
+          e.preventDefault()
+          e.stopPropagation()
+        }}
+      >
         <View className='foods'>
           <Image className='image' src={data.headurl} />
         </View>

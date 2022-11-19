@@ -22,7 +22,7 @@ function Action ({onMember, onToggle, isOpenedOverlay}) {
             <BaseIcon name='icon-member' size={14} />
           </View>
           <View className='desc'>
-            <Text>登录会员</Text>
+            <Text>加入会员</Text>
           </View>
           <View className='icon-box icon-box--arrow'>
             <BaseIcon name='icon-arrow' size={14} />

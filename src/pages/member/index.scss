@@ -5,7 +5,7 @@
   height: 100%;
   .form-panel {
     width: 96%;
-    margin: 20px auto;
+    margin: 20px auto 40px auto;
     padding: 20px;
     box-sizing: border-box;
     border-radius: $border-radius-lg;
@@ -30,5 +30,16 @@
         border-bottom: 1px solid $border-base-color;
       }
     }
+  }
+  .submit-container {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    z-index: 100;
+    width: 100%;
+    padding: 20px;
+    padding-bottom: var(--safe-area-inset-bottom);
+    box-sizing: border-box;
+    background-color: $white;
   }
 }

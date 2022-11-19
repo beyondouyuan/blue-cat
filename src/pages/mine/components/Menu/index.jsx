@@ -23,7 +23,7 @@ function Menu({onPress}) {
                 <BaseIcon name={item.icon} />
               </View>
               <View className='label'>
-                <Text className='txt-h3'>{item.label}</Text>
+                <Text className='txt-h3 color-secondary'>{item.label}</Text>
               </View>
               <View className='menu-icon menu-icon--arrow'>
                 <BaseIcon name='icon-arrow' />

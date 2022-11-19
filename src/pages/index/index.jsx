@@ -173,8 +173,8 @@ class IndexPage extends Component {
                               key={item.value}
                               onClick={(e) => {
                                 this.handleNumberChange(item.value)
-                                e.preventDefault();
-                                e.stopPropagation();
+                                e.preventDefault()
+                                e.stopPropagation()
                               }}
                             >
                               <Text>{item.label}</Text>
