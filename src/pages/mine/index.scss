@@ -1,36 +1,62 @@
 @import 'src/style/variables/default.scss';
 
 .mine-page {
-  .account-container {
+  .member-container {
     width: 100%;
-    height: 20vh;
+    // height: 20vh;
     background-color: $primary;
 
     &__content {
       width: 100%;
-      height: 100%;
       padding: 0 30px;
       box-sizing: border-box;
       display: flex;
       align-items: center;
+      justify-content: space-between;
 
       &-avatar {
         .avatar {
-          width: 168px;
-          height: 168px;
+          width: 128px;
+          height: 128px;
           border-radius: 50%;
           overflow: hidden;
         }
       }
+
+      .member-user {
+        margin-left: 15px;
+        font-size: $font-size-sm;
+        color: $text-white-color;
+        flex: 1;
+        &__name {
+          font-size: $font-size-lg;
+        }
+      }
+
+      .action-panel {
+        display: flex;
+        &--item {
+          margin-left: 40px;
+          color: $text-white-color;
+        }
+      }
     }
 
-    .account-user {
-      margin-left: 15px;
-      font-size: $font-size-sm;
-      color: $text-white-color;
+    .member-wrapper {
+      width: 100%;
+      padding: 30px;
+      box-sizing: border-box;
+      display: flex;
 
-      &__name {
-        font-size: $font-size-lg;
+      .member-item {
+        flex: 1;
+        text-align: center;
+        font-size: $font-size-md;
+        color: $text-white-color;
+
+        .label {
+          margin-top: 15px;
+        }
       }
     }
   }
@@ -45,10 +71,13 @@
     background-color: $background-white;
 
     .menu-item {
-      height: 60px;
+      height: 70px;
       display: flex;
       align-items: center;
       justify-content: space-between;
+      &:not(:last-child) {
+        border-bottom: 1px solid $border-light-color;
+      }
 
       .label {
         flex: 1;
@@ -62,6 +91,9 @@
 
         &--order {
           color: $primary;
+        }
+        &--member {
+          color: $warning;
         }
         &--arrow {
           color: $text-secondary-color;

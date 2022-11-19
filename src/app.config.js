@@ -9,7 +9,7 @@ export default defineAppConfig({
     'pages/order/index', // 订单详情
     'pages/pay/index', // 重新支付中转页
     'pages/mine/index', // 个人中心
-    'pages/member/index' // 会员
+    'pages/member/index' // 加入会员
   ],
   window: {
     backgroundTextStyle: 'light',
