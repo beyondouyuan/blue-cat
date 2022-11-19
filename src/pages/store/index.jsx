@@ -608,7 +608,6 @@ class StorePage extends Component {
     const style = {
       marginTop: showSearch ? '-70px' : '0px'
     }
-    const rootClass = isOpenedOverlay ? 'merchant-wrapper merchant-wrapper--active' : 'merchant-wrapper'
     const merchantData = {
       address: this.$merchantCache.address,
       linkPhone: this.$merchantCache.linkPhone
@@ -653,12 +652,10 @@ class StorePage extends Component {
             onShowCart={this.handleShowCart}
             className={submitClass}
           />
-          <View className={rootClass}>
-            <Merchant
-              isOpenedOverlay={isOpenedOverlay}
-              data={merchantData}
-            />
-          </View>
+          <Merchant
+            isOpenedOverlay={isOpenedOverlay}
+            data={merchantData}
+          />
           <Drawer
             show={drawerVisible}
             onClose={this.handleCloseDrawer}
