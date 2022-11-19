@@ -152,7 +152,7 @@ class IndexPage extends Component {
                 <Text>您好，请选择就餐人数</Text>
               </View>
               <View className='desk'>
-                <Text>桌号B10</Text>
+                <Text>{storeInfo?.tableNane ? `桌号${storeInfo.tableNane}` : ''}</Text>
               </View>
             </View>
 
