@@ -12,7 +12,7 @@ function Item ({ data, onCounter }) {
           <View className='title txt-h3'>
             <Text>{ data.productName }</Text>
           </View>
-          <View className='remark txt-h4 txt-secondary'>
+          <View className='remark txt-h4 color-secondary'>
             <Text>{ data.specificationRemark }</Text>
           </View>
           <View className='price'>

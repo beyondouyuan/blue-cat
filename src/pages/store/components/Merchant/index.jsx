@@ -12,12 +12,12 @@ function Merchant({ data, isOpenedOverlay = false }) {
         isOpenedOverlay && (
           <View className='merchant-content'>
             <View className='item address'>
-              <Text className='label txt-h3 txt-secondary '>地址：</Text>
-              <Text className='value txt-h3 txt-secondary '>{data.address}</Text>
+              <Text className='label txt-h3 color-secondary '>地址：</Text>
+              <Text className='value txt-h3 color-secondary '>{data.address}</Text>
             </View>
             <View className='item phone'>
-              <Text className='label txt-h3 txt-secondary '>电话：</Text>
-              <Text className='value txt-h3 txt-secondary '>{data.linkPhone}</Text>
+              <Text className='label txt-h3 color-secondary '>电话：</Text>
+              <Text className='value txt-h3 color-secondary '>{data.linkPhone}</Text>
             </View>
           </View>
         )

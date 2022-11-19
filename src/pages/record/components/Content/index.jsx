@@ -5,7 +5,7 @@ import Item from './Item'
 
 class Content extends Component {
   render() {
-    const { sourceData, threshold = 100, onPress } = this.props
+    const { sourceData, threshold = 100, onPress, onPay, onCancel } = this.props
     return (
       <ScrollView
         className='content-container'
@@ -17,7 +17,13 @@ class Content extends Component {
           {
             sourceData.length ? sourceData.map(item => {
               return (
-                <Item key={item.orderNum} data={item} onPress={onPress} />
+                <Item
+                  key={item.orderNum}
+                  data={item}
+                  onPress={onPress}
+                  onPay={onPay}
+                  onCancel={onCancel}
+                />
               )
             }) : null
           }

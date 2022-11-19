@@ -23,3 +23,11 @@ export function requestParams(data) {
     bizType: 'customerPay'
   })
 }
+
+export function requestOrderDetail(data) {
+  return apiPost({
+    url: '/wechat/queryHistoryProductOrder',
+    data,
+    bizType: 'queryHistoryProductOrder'
+  })
+}

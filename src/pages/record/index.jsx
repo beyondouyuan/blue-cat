@@ -6,6 +6,7 @@ import { requestOrderList } from '../../service/order'
 import Content from './components/Content'
 import { handleNavigateTo } from '../../shared/navigator'
 
+import { showToast } from '../../shared/toast'
 
 class RecordPage extends Component {
   constructor(props) {
@@ -44,6 +45,14 @@ class RecordPage extends Component {
     })
   }
 
+  handleSwitchPay () {
+    showToast({title: '根据productOrderStatusCode是否可去支付'})
+  }
+
+  handleCancel () {
+    showToast({title: '根据productOrderStatusCode是否可取消'})
+  }
+
   render () {
     const { sourceData } = this.state
     return (
@@ -51,6 +60,8 @@ class RecordPage extends Component {
         <Content
           sourceData={sourceData}
           onPress={this.handlePress}
+          onPay={this.handleSwitchPay}
+          onCancel={this.handleCancel}
         />
       </View>
     )

@@ -1,16 +1,22 @@
 import { Component } from 'react'
-import { View, Text } from '@tarojs/components'
+import { View } from '@tarojs/components'
 
 import './index.scss'
-import { requestOrderList } from '../../service/order'
+import { requestOrderDetail } from '../../service/order'
 
 import { getCurrentInstance } from '../../shared/get-instance'
+import Content from './components/Content'
+import Footer from './components/Footer'
+import { showToast } from '../../shared/toast'
 
 
 class OrderPage extends Component {
 
   constructor(props) {
     super(props)
+    this.state = {
+      sourceData: {}
+    }
     this.handleFetchData = this.handleFetchData.bind(this)
   }
 
@@ -35,19 +41,33 @@ class OrderPage extends Component {
     const condition = {
       orderId
     }
-    requestOrderList(condition)
+    requestOrderDetail(condition)
       .then(res => {
-        console.log(res)
-        // this.setState({
-        //   sourceData: res
-        // })
+        this.setState({
+          sourceData: res
+        })
       })
   }
 
+  handleSwitchPay () {
+    showToast({title: '根据productOrderStatusCode是否可去支付'})
+  }
+
+  handleCancel () {
+    showToast({title: '根据productOrderStatusCode是否可取消'})
+  }
+
   render () {
+    const { sourceData } = this.state
     return (
       <View className='page-container order-page'>
-        <View><Text>订单详情</Text></View>
+        <Content
+          sourceData={sourceData}
+        />
+        <Footer
+          onPay={this.handleSwitchPay}
+          onCancel={this.handleCancel}
+        />
       </View>
     )
   }

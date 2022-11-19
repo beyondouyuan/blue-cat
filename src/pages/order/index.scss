@@ -1,4 +1,103 @@
-.index {
-  flex-direction: column;
+@import 'src/style/variables/default.scss';
+
+.order-page {
   width: 100%;
+
+  .content-container {
+    width: 100%;
+    padding: 20px;
+    position: relative;
+    box-sizing: border-box;
+    background-color: $background-base;
+    .status {
+      margin-bottom: 15px;
+    }
+
+    &--wrapper {
+      width: 100%;
+      padding: 10px;
+      box-sizing: border-box;
+      border-radius: $border-radius-xl;
+      background-color: $background-white;
+
+      .order-item {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 15px;
+
+        &--image {
+          width: 140px;
+          height: 140px;
+          overflow: hidden;
+          border-radius: $border-radius-xl;
+
+          .image {
+            width: 100%;
+            height: 100%;
+            border-radius: $border-radius-xl;
+            background-color: rgba($color: $background-gray, $alpha: .3);
+          }
+        }
+
+        &--body {
+          flex: 1;
+          margin-left: 15px;
+          max-width: calc(100% - 155px);
+
+          .desc {
+            .space {
+              margin-left: 6px;
+            }
+          }
+        }
+      }
+    }
+
+    .detail-wrapper {
+      margin-top: 20px;
+      padding: 10px;
+      box-sizing: border-box;
+      border-radius: $border-radius-xl;
+      background-color: $background-white;
+
+      &--item {
+        display: flex;
+        align-items: center;
+        padding: 8px 0;
+        box-sizing: border-box;
+
+        .label {
+          margin-right: 20px;
+        }
+
+        &.amount {
+          justify-content: flex-end;
+        }
+      }
+    }
+  }
+
+  .footer-wrapper {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    padding: 20px;
+    padding-bottom: var(--safe-area-inset-bottom);
+    box-sizing: border-box;
+    background-color: $white;
+
+    .button-list {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+
+      &--item {
+        width: 140px;
+        margin-left: 20px;
+      }
+    }
+  }
 }

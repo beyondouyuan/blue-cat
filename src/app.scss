@@ -58,7 +58,10 @@ page,
 .price-red {
   color: $danger;
 }
-.price-primary {
+.txt-h1 {
+  font-size: $font-size-big-large;
+}
+.txt-h2 {
   font-size: $font-size-xl;
 }
 .txt-h3 {
@@ -67,6 +70,9 @@ page,
 .txt-h4 {
   font-size: $font-size-sm;
 }
-.txt-secondary {
+.color-primary {
+  color: $text-primary-color;
+}
+.color-secondary {
   color: $text-secondary-color;
 }

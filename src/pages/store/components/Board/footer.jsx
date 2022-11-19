@@ -10,7 +10,7 @@ function Footer({ data, onAddCart, onCounter }) {
           <View className='price'>
             <Text className='price-unit price-red'>¥</Text>
             <Text className='price-value price-red price-primary'>{data.totalPrice}</Text>
-            <Text className='txt-h4 txt-secondary'>/份</Text>
+            <Text className='txt-h4 color-secondary'>/份</Text>
           </View>
           <View className='desc txt-h3'>
             {

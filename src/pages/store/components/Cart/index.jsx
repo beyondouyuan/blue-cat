@@ -8,7 +8,7 @@ class Cart extends Component {
     return (
       <View className='cart-container'>
         <View className='action-bar' onClick={this.props.onClean}>
-          <Text className='txt-h4 txt-secondary'>清空已选</Text>
+          <Text className='txt-h4 color-secondary'>清空已选</Text>
         </View>
         <ScrollView
           className='cart-view'
