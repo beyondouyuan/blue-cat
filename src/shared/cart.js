@@ -16,6 +16,7 @@ export function initSourceData(sourceData) {
     })
     const productTarget = {
       list: list,
+      num: list.length || 0,
       value: item['productTypeId']
     }
     sidebarList.push(sidebarTarget)

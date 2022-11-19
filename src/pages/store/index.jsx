@@ -1,5 +1,6 @@
 import { Component } from 'react'
 import { View } from '@tarojs/components'
+import Taro from '@tarojs/taro'
 
 import Drawer from '../../components/Drawer'
 import Tabar from './components/Tabar'
@@ -18,7 +19,8 @@ import { cleanShoppingCart, requestCreateShoppingCart, requestProductDimension, 
 import { queryPhone, requestPhone } from '../../service/user'
 import { initSourceData, initMaterialsSource, updateMaterialsSource } from '../../shared/cart'
 import Compute from '../../shared/compute'
-import { getMerchantCacheSync } from '../../shared/global'
+import { getMerchantCacheSync, getOrderIdCacheSync } from '../../shared/global'
+import Merchant from './components/Merchant'
 
 const cate = [{
   value: '1',
@@ -54,7 +56,13 @@ class StorePage extends Component {
       sizeName: '',
       measureName: '',
       flavorName: '',
-      consumeName: '堂食'
+      consumeName: '堂食',
+      scrollRef: 'scroll-screent',
+      currentIntoView: '',
+      currentProductTypeId: '',
+      scrollByClick: false,
+      currentProductTypeLabel: '',
+      isOpenedOverlay: false
     }
     this.handleOnScroll = this.handleOnScroll.bind(this)
     this.handleCloseDrawer = this.handleCloseDrawer.bind(this)
@@ -71,6 +79,9 @@ class StorePage extends Component {
     this.handleShowCart = this.handleShowCart.bind(this)
     this.handleUpdateShopCart = this.handleUpdateShopCart.bind(this)
     this.handleCleanShopCart = this.handleCleanShopCart.bind(this)
+    this.handleSidebarClick = this.handleSidebarClick.bind(this)
+    this.handleUpdateCurrentIntoView = this.handleUpdateCurrentIntoView.bind(this)
+    this.handleToggleMerchant = this.handleToggleMerchant.bind(this)
   }
 
   componentDidMount() {
@@ -109,7 +120,10 @@ class StorePage extends Component {
         const { productList, sidebarList } = initSourceData(res)
         this.setState({
           sidebarList,
-          productList
+          productList,
+          currentIntoView: sidebarList[0].value,
+          currentProductTypeId: sidebarList[0].value,
+          currentProductTypeLabel: sidebarList[0]?.label ?? ''
         })
       })
   }
@@ -117,6 +131,39 @@ class StorePage extends Component {
   handleOnScroll(data) {
     this.setState({
       showSearch: data.show
+    })
+    if (this.state.scrollByClick) {
+      setTimeout(() => {
+        this.setState({
+          scrollByClick: false
+        })
+      }, 200)
+      return
+    }
+    // 若是由点击引起的滚动，则不做以下处理
+    const _self = this
+    const { sidebarList } = this.state
+    const query = Taro.createSelectorQuery()
+    query.selectAll('.content-wrapper').boundingClientRect()
+    query.selectViewport().scrollOffset()
+    query.exec(function (res) {
+      const idList = []
+      const topList = []
+      res[0].map((item) => {
+        if (item.top >= 0) {
+          topList.push(item.top)
+          idList.push(item.id)
+        }
+      })
+      const shiftItem = idList[0]
+      const value = shiftItem.match(/\d+/g)[0]
+      const target = sidebarList.find((item) => {
+        return item.value === +value
+      })
+      _self.setState({
+        currentProductTypeId: +value,
+        currentProductTypeLabel: target?.label ?? ''
+      })
     })
   }
 
@@ -181,17 +228,27 @@ class StorePage extends Component {
   }
 
   handleSubmit() {
+    const { shoppingCartList } = this.state
     const { tableId, peopleNum, merchantNum, tableName } = this.$instance.router.params
     this.setState({
       drawerVisible: false
     })
+    const payTag = this.$merchantCache?.payTag ?? false
+    const orderIdCache = getOrderIdCacheSync()
+    let isCreate = '1'
+    // 若是先下单后支付，且已经下过单，即便没有选择新的商品也可以去下单页面
+    if (payTag && orderIdCache && !shoppingCartList.length) {
+      isCreate = '0'
+    }
+
     handleNavigateTo({
       path: '/pages/book/index',
       params: {
         tableId: tableId || this.$merchantCache?.tableId || '',
         peopleNum: peopleNum || this.$merchantCache?.peopleNum || '',
         merchantNum: merchantNum || this.$merchantCache?.merchantNum || '',
-        tableName: tableName || this.$merchantCache?.tableNane || ''
+        tableName: tableName || this.$merchantCache?.tableNane || '',
+        isCreate
       }
     })
   }
@@ -419,6 +476,11 @@ class StorePage extends Component {
           shoppingCartList
         })
       })
+      .catch(() => {
+        this.setState({
+          shoppingCartList: []
+        })
+      })
       .finally(() => {
         this.setState({
           shopCartLoading: false
@@ -433,13 +495,13 @@ class StorePage extends Component {
     })
   }
 
-  handlePress () {
+  handlePress() {
     handleNavigateTo({
       path: '/pages/mine/index'
     })
   }
 
-  handleCleanShopCart () {
+  handleCleanShopCart() {
     const { tableId } = this.$instance.router.params
     const params = {
       tableId: tableId || this.$merchantCache.tableId || ''
@@ -457,7 +519,7 @@ class StorePage extends Component {
       })
   }
 
-  handleUpdateShopCart (data, options) {
+  handleUpdateShopCart(data, options) {
     const { shoppingCartId, productId } = data
     const { type } = options
     const { tableId } = this.$instance.router.params
@@ -477,6 +539,30 @@ class StorePage extends Component {
     handleNavigateTo({
       path: '/pages/member/index'
     })
+  }
+
+  handleSidebarClick(item) {
+    this.handleUpdateCurrentIntoView(item.value)
+  }
+
+  handleUpdateCurrentIntoView(v) {
+    const { currentIntoView, sidebarList } = this.state
+    if (v === currentIntoView) return
+    const target = sidebarList.find((item) => {
+      return item.value === currentIntoView
+    })
+    this.setState({
+      currentIntoView: v,
+      scrollByClick: true,
+      currentProductTypeId: v,
+      currentProductTypeLabel: target?.label ?? ''
+    })
+  }
+
+  handleToggleMerchant() {
+    this.setState(prevState => ({
+      isOpenedOverlay: !prevState.isOpenedOverlay
+    }))
   }
 
   render() {
@@ -502,7 +588,12 @@ class StorePage extends Component {
       sizeName,
       measureName,
       flavorName,
-      consumeName
+      consumeName,
+      scrollRef,
+      currentIntoView,
+      currentProductTypeId,
+      currentProductTypeLabel,
+      isOpenedOverlay
     } = this.state
     const cartNum = shoppingCartList.length || 0
     const materialsSource = $$materialsSource.get('materials')
@@ -517,6 +608,11 @@ class StorePage extends Component {
     const style = {
       marginTop: showSearch ? '-70px' : '0px'
     }
+    const rootClass = isOpenedOverlay ? 'merchant-wrapper merchant-wrapper--active' : 'merchant-wrapper'
+    const merchantData = {
+      address: this.$merchantCache.address,
+      linkPhone: this.$merchantCache.linkPhone
+    }
     return (
       <View className='page-container store-page'>
         <View className='container'>
@@ -528,15 +624,23 @@ class StorePage extends Component {
           <View className='body' style={style}>
             <Action
               onMember={this.handleSwitchMember}
+              onToggle={this.handleToggleMerchant}
+              isOpenedOverlay={isOpenedOverlay}
             />
             <View className='main'>
-              <Sidebar sourceData={sidebarList} />
+              <Sidebar
+                sourceData={sidebarList}
+                onSidebar={this.handleSidebarClick}
+                currentIntoView={currentProductTypeId}
+              />
               <View className='list-wrapper'>
-                <View className='list-wrapper__title'>当前选择的</View>
+                <View className='list-wrapper__title'>{currentProductTypeLabel}</View>
                 <Content
                   sourceData={productList}
                   onScroll={this.handleOnScroll}
                   onSelect={this.handleSelect}
+                  scrollRef={scrollRef}
+                  currentIntoView={currentIntoView}
                 />
               </View>
             </View>
@@ -549,6 +653,12 @@ class StorePage extends Component {
             onShowCart={this.handleShowCart}
             className={submitClass}
           />
+          <View className={rootClass}>
+            <Merchant
+              isOpenedOverlay={isOpenedOverlay}
+              data={merchantData}
+            />
+          </View>
           <Drawer
             show={drawerVisible}
             onClose={this.handleCloseDrawer}

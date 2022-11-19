@@ -134,16 +134,16 @@ class IndexPage extends Component {
   }
 
   render () {
-    const { peopleNum, disabled } = this.state
+    const { peopleNum, disabled, storeInfo } = this.state
     return (
       <View className='page-container index-page'>
         <View className='container'>
           <View className='header'>
             <View className='welcome'>
-              <Text>欢迎来到</Text>
+              <Text>欢迎光临</Text>
             </View>
             <View className='name'>
-              <Text>这个店铺</Text>
+              <Text>{storeInfo?.address ?? ''}</Text>
             </View>
           </View>
           <View className='body'>

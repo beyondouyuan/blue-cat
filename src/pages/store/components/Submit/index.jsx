@@ -4,9 +4,10 @@ import classNames from 'classnames'
 import BaseButton from '../../../../components/Button'
 import MButton from '../../../../components/MButton'
 import BaseIcon from '../../../../components/Icon'
+import { getOrderIdCacheSync } from '../../../../shared/global'
 
 function Submit ({ onGetAuthor, phoneInfo = {}, onPress, onShowCart, cartNum = 0, className }) {
-  const disabled = !cartNum
+  const disabled = !(cartNum || getOrderIdCacheSync())
   const buttonProps = {
     openType: 'getPhoneNumber',
     size: 'mini',

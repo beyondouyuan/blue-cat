@@ -1,10 +1,7 @@
 import { View, Text } from '@tarojs/components'
 import BaseButton from '../../../../components/Button'
 
-function Submit ({ onPress, onSubmit, sumAmount = 0, payTag, immediatePay }) {
-  const isShouldCreateOrder = payTag && !immediatePay
-  const isShouldPayOrder = payTag && immediatePay
-  const btnText = isShouldCreateOrder ? '去下单' : isShouldPayOrder ? '立即支付' : '去支付'
+function Submit ({ onPress, onSubmit, sumAmount = 0, payTag }) {
   return (
     <View className='submit-container'>
       <View className='submit-container__content'>
@@ -13,11 +10,15 @@ function Submit ({ onPress, onSubmit, sumAmount = 0, payTag, immediatePay }) {
           <Text className='price-value price-red'>{sumAmount}</Text>
         </View>
         <View className='submit-action'>
-          <View className='pick'>
-            <BaseButton size='middle' circle onClick={onPress}>继续点餐</BaseButton>
-          </View>
+          {
+            payTag && (
+              <View className='pick'>
+                <BaseButton size='middle' circle onClick={onPress}>继续点餐</BaseButton>
+              </View>
+            )
+          }
           <View className='submit'>
-            <BaseButton size='middle' circle onClick={onSubmit}>{btnText}</BaseButton>
+            <BaseButton size='middle' circle onClick={onSubmit}>立即支付</BaseButton>
           </View>
         </View>
       </View>

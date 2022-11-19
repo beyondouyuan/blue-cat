@@ -12,26 +12,27 @@ class Content extends Component {
   timer = null
   handleScrollToLower() { }
   handleOnScroll(e) {
-    const timeoutTask = callback => () => {
-      callback.call(this, e);
-    }
-
-    // 节流方法
-    const throttleMethod = requestAnimationFrame
-      ? callback => requestAnimationFrame(timeoutTask(callback))
-      : callback => setTimeout(timeoutTask(callback), 16.67);
-    // const throttleMethod = (callback) => {
-    //   if (this.timer) {
-    //     clearTimeout(this.timer)
-    //   }
-    //   return this.timer = setTimeout(timeoutTask(callback), 300)
+    // const timeoutTask = callback => () => {
+    //   callback.call(this, e);
     // }
-    throttleMethod(this.handleScrollCallback)
+
+    // // 节流方法
+    // const throttleMethod = requestAnimationFrame
+    //   ? callback => requestAnimationFrame(timeoutTask(callback))
+    //   : callback => setTimeout(timeoutTask(callback), 16.67);
+    // // const throttleMethod = (callback) => {
+    // //   if (this.timer) {
+    // //     clearTimeout(this.timer)
+    // //   }
+    // //   return this.timer = setTimeout(timeoutTask(callback), 300)
+    // // }
+    // throttleMethod(this.handleScrollCallback)
+    this.handleScrollCallback(e)
   }
 
   handleScrollCallback(e) {
     let show = false
-    if (e.detail.scrollTop > 200) {
+    if (e.detail.scrollTop > 120) {
       // 显示搜索框
       show = true
     } else {
@@ -39,7 +40,8 @@ class Content extends Component {
       show = false
     }
     this.props.onScroll({
-      show
+      show,
+      event: e
     })
   }
 
@@ -48,15 +50,20 @@ class Content extends Component {
   }
 
   render() {
-    const { sourceData = [], threshold = 100 } = this.props
+    const { sourceData = [], threshold = 100, scrollRef, currentIntoView } = this.props
     return (
       <ScrollView
+        ref={scrollRef}
+        id={scrollRef}
         className='content-container'
         scrollY
         scrollWithAnimation
+        scrollAnchoring
+        fastDeceleration
         lowerThreshold={threshold}
         onScrollToLower={this.handleScrollToLower}
         onScroll={this.handleOnScroll}
+        scrollIntoView={`${scrollRef}-${currentIntoView}`}
       >
         {
           sourceData.length ? sourceData.map(item => {
@@ -65,6 +72,8 @@ class Content extends Component {
               <View
                 key={item.value}
                 className='content-wrapper'
+                ref={`${scrollRef}-${item.value}`}
+                id={`${scrollRef}-${item.value}`}
               >
                 {
                   list.length ? list.map(child => {

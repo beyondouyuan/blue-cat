@@ -1,7 +1,6 @@
 import { Component } from 'react'
 import { View } from '@tarojs/components'
 
-import Dialog from '../../components/Dialog'
 import Content from './components/Content'
 import Submit from './components/Submit'
 
@@ -15,31 +14,28 @@ import { hideLoading, showLoading } from '../../shared/loading'
 import { showToast } from '../../shared/toast'
 import { requestCreateOrder, requestParams } from '../../service/order'
 import { handlePay } from '../../shared/pay'
-import { getMerchantCacheSync, getOrderIdCacheSync, setOrderIdCacheSync } from '../../shared/global'
+import { getMerchantCacheSync, getOrderIdCacheSync, removeOrderIdCacheSync, setOrderIdCacheSync } from '../../shared/global'
+import Compute from '../../shared/compute'
 
 
 class BookPage extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      shoppingCartList: [],
+      sourceList: [],
       sumAmount: 0,
-      productOrderId: '',
-      isOpendDialog: false,
-      immediatePay: false
+      productOrderId: ''
     }
 
     this.fetchShopCartList = this.fetchShopCartList.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this)
-    this.handleOpenDialog = this.handleOpenDialog.bind(this)
-    this.handleCloseDialog = this.handleCloseDialog.bind(this)
     this.handleOrderPay = this.handleOrderPay.bind(this)
-    this.handlePressConfirm = this.handlePressConfirm.bind(this)
+    this.handlePreOrder = this.handlePreOrder.bind(this)
   }
 
 
   componentDidMount() {
-    this.fetchShopCartList()
+    this.handlePreOrder()
   }
 
   componentWillUnmount() { }
@@ -51,14 +47,8 @@ class BookPage extends Component {
   $instance = getCurrentInstance()
   $merchantCache = getMerchantCacheSync() || {}
 
-  handleOpenDialog() {
-    this.setState({
-      isOpendDialog: true
-    })
-  }
-
   fetchShopCartList() {
-    const { payTag } = this.$merchantCache
+    const { payTag, teaSeatFee } = this.$merchantCache
     const orderIdCache = getOrderIdCacheSync()
     const { tableId } = this.$instance.router.params
     const condition = {
@@ -76,14 +66,20 @@ class BookPage extends Component {
     }
     action[type](condition)
       .then(res => {
-        const { shoppingCartList, sumAmount } = res
+        const sourceList = type === 'default' ? [res] : res.redisData
+        let totalPrice = 0
+        for(let i = 0; i < sourceList.length; i++) {
+          const sumAmount = sourceList[i]['sumAmount']
+          totalPrice = Compute.add(totalPrice, sumAmount)
+        }
+        const allPrice = Compute.add(totalPrice, teaSeatFee)
         this.setState({
-          shoppingCartList,
-          sumAmount
+          sourceList,
+          sumAmount: allPrice
         })
       })
       .catch(e => {
-        console.log('e', e.code)
+        console.log('e', e)
       })
   }
 
@@ -102,9 +98,28 @@ class BookPage extends Component {
     return requestCreateOrder(params)
   }
 
+  handlePreOrder () {
+    const { isCreate} = this.$instance.router.params
+    // 无需创单
+    if (isCreate === '0') {
+      this.fetchShopCartList()
+      return
+    }
+    this.handleCreateOrder()
+      .then(res => {
+        const { productOrderId } = res
+        setOrderIdCacheSync(productOrderId)
+        this.setState({
+          productOrderId: productOrderId
+        }, () => {
+          this.fetchShopCartList()
+        })
+      })
+  }
+
   async handleOrderPay() {
     const { sumAmount, productOrderId } = this.state
-    // if (!productOrderId) return
+    if (!productOrderId) return
     const { merchantNum } = this.$instance.router.params
     const params = {
       productOrderId,
@@ -136,6 +151,7 @@ class BookPage extends Component {
         })
       },
       complete: (rs) => {
+        removeOrderIdCacheSync()
         hideLoading()
         switch (rs.errMsg) {
           case 'requestPayment:fail cancel':
@@ -184,81 +200,29 @@ class BookPage extends Component {
   }
 
   async handleSubmit() {
-    const { payTag } = this.$merchantCache
-    const { immediatePay } = this.state
-    try {
-      showLoading({
-        title: '请稍后...'
-      })
-      // 立即支付：已经创建订单，可以去支付了
-      if (payTag && immediatePay) {
-        this.handleOrderPay()
-        return
-      }
-      // 创建预支付订单：还未创建订单，需先创建订单
-      const orderResult = await this.handleCreateOrder()
-      const productOrderId = orderResult.productOrderId
-      // 写成同步好处理
-      await this.setStatePromise({
-        productOrderId
-      }, productOrderId)
-      // 弹窗询问：若是先下单，再支付，在创建预支付单成功后弹窗询问是否立即支付
-      if (payTag) {
-        setOrderIdCacheSync(productOrderId)
-        this.handleOpenDialog()
-        hideLoading()
-        return
-      }
-      // 支付：若是先支付，再下单，则在创建预支付订单后立刻支付，完成整个流程
-      this.handleOrderPay()
-    } catch (error) {
-      hideLoading()
-      showToast({
-        title: '下单失败'
-      })
-    }
-  }
-
-  handlePressConfirm () {
-    console.log('ah')
+    showLoading({
+      title: '请稍后...'
+    })
     this.handleOrderPay()
   }
 
-  handleCloseDialog () {
-    this.setState({
-      isOpendDialog: false,
-      immediatePay: true
-    })
-  }
-
   render() {
-    const { shoppingCartList, sumAmount, isOpendDialog, immediatePay } = this.state
+    const { sourceList, sumAmount } = this.state
     const { tableName } = this.$instance.router.params
-    const { payTag } = this.$merchantCache
+    const { payTag, teaSeatFee } = this.$merchantCache
     return (
       <View className='page-container book-page'>
         <Content
-          list={shoppingCartList}
+          sourceList={sourceList}
           sumAmount={sumAmount}
           tableName={tableName}
+          teaSeatFee={teaSeatFee}
         />
         <Submit
           sumAmount={sumAmount}
           onPress={this.handlePress}
           onSubmit={this.handleSubmit}
           payTag={payTag}
-          immediatePay={immediatePay}
-        />
-
-        <Dialog
-          opened={isOpendDialog}
-          center
-          title='提示'
-          content='下单成功！是否立即支付？'
-          cancelText='暂不支付'
-          confirmText='立即支付'
-          onConfirm={this.handlePressConfirm}
-          onCancel={this.handleCloseDialog}
         />
       </View>
     )

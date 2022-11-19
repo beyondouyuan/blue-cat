@@ -89,14 +89,14 @@ class ResultPage extends Component {
           </View>
           <View className='result-action'>
             <View className='result-action__item'>
-              <BaseButton type='warning' size='normal' full onClick={() => this.handleMenuPress('order')}>查看订单</BaseButton>
+              <BaseButton type='primary' size='normal' full onClick={() => this.handleMenuPress('order')}>查看订单</BaseButton>
             </View>
             <View className='result-action__item'>
               {
                 success ? (
-                  <BaseButton size='normal' full onClick={() => this.handleMenuPress('home')}>返回首页</BaseButton>
+                  <BaseButton type='primary' size='normal' full onClick={() => this.handleMenuPress('home')}>返回首页</BaseButton>
                 ) : (
-                  <BaseButton type='success' size='normal' full onClick={() => this.handleMenuPress('pay')}>再次支付</BaseButton>
+                  <BaseButton type='warning' size='normal' full onClick={() => this.handleMenuPress('pay')}>再次支付</BaseButton>
                 )
               }
             </View>
