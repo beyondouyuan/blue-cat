@@ -1,7 +1,8 @@
 import Taro from '@tarojs/taro'
 import { APP_ID } from './config'
+import events from './event'
+import { getToken, removeCode, removeToken, requestUserLogin } from './login'
 import { dencryptedDes, encryptedDes, encryptedRsa } from './security'
-import { getUserTokenCacheSync } from './user'
 
 const BASE_API = 'https://lanmaogo.891tech.com/lanmaogo-website/interface'
 
@@ -18,7 +19,7 @@ const request = async (options) => {
     mergeData['appid'] = APP_ID
   } else {
     // 非登陆接口
-    mergeData['userToken'] = getUserTokenCacheSync() || ''
+    mergeData['userToken'] = getToken() || ''
   }
   const encryptedParams = encryptedDes(mergeData) // encryptedDes
   const signature = encryptedRsa(encryptedParams)
@@ -52,8 +53,24 @@ const request = async (options) => {
     console.log('解密后的响应数据', result)
     return JSON.parse(result)
   } else {
+    // token失效
+    if (body.retCode === 'C0014') {
+      removeToken()
+      requestUserLogin()
+        .then(() => {
+          events.trigger('onloginSuccess', {result: true})
+        })
+    }
+    // code失效
+    if (body.retCode === 'C8885') {
+      removeCode()
+      removeToken()
+      requestUserLogin()
+      .then(() => {
+        events.trigger('onloginSuccess', {result: true})
+      })
+    }
     throw new ApiServiceError({}, body.retMsg, body.retCode)
-    // return {}
   }
 }
 

@@ -49,7 +49,7 @@ class Dialog extends Component {
     if (this.props.closeOverLay) {
       this.setState({
         isOpened: false
-      }, this.handleClose)
+      }, this.handleCancel)
     }
   }
 
@@ -73,11 +73,10 @@ class Dialog extends Component {
 
   render() {
     const { isOpened } = this.state
-    const { title, content, cancelText, confirmText, center = false  } = this.props
+    const { title, content, cancelText, confirmText, center = false } = this.props
     const rootClass = isOpened ? 'base-dialog base-dialog-opened' : `base-dialog`
-
+    const isRenderAction = cancelText || confirmText
     if (title && content) {
-      const isRenderAction = cancelText || confirmText
       return (
         <View
           className={rootClass}
@@ -121,7 +120,27 @@ class Dialog extends Component {
         className={rootClass}
       >
         <View className='base-dialog-overlay' onClick={this.handleClickOverLay}></View>
-        <View className='base-dialog-content'>{this.props.children}</View>
+        <View className='base-dialog-content'>
+          <View className='base-dialog--main'>{this.props.children}</View>
+          {
+            isRenderAction && (
+              <View className='base-dialog-footer'>
+                <Action>
+                  {cancelText && (
+                    <View className='btn btn-cancel' onClick={this.handleCancel}>
+                      <Text>{cancelText}</Text>
+                    </View>
+                  )}
+                  {confirmText && (
+                    <View className='btn btn-confirm' onClick={this.handleConfirm}>
+                      <Text>{confirmText}</Text>
+                    </View>
+                  )}
+                </Action>
+              </View>
+            )
+          }
+        </View>
       </View>
     )
   }

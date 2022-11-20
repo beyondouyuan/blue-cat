@@ -43,12 +43,20 @@ function Item({ data, onPress, onCancel, onPay }) {
           <View className=''></View>
         </View>
         <View className='button-list'>
-          <View className='button-list--item'>
-            <BaseButton type='info' size='small' circle onClick={onCancel}>取消订单</BaseButton>
-          </View>
-          <View className='button-list--item'>
-            <BaseButton type='warning' size='small' circle onClick={onPay}>去支付</BaseButton>
-          </View>
+          {
+            data?.productOrderStatusCode === 'SUCCESS' ? (
+              <View className='button-list--item'>
+                <BaseButton type='info' size='small' circle onClick={() => onCancel(data)}>取消订单</BaseButton>
+              </View>
+            ) : null
+          }
+          {
+            data?.productOrderStatusCode === 'DOING' ? (
+              <View className='button-list--item'>
+                <BaseButton type='warning' size='small' circle onClick={() => onPay(data)}>去支付</BaseButton>
+              </View>
+            ) : null
+          }
         </View>
       </View>
     </View>

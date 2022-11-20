@@ -3,11 +3,12 @@ import { View } from '@tarojs/components'
 
 import './index.scss'
 import { requestOrderDetail } from '../../service/order'
-
+import { handleRedirectTo } from '../../shared/navigator'
 import { getCurrentInstance } from '../../shared/get-instance'
+import { getMerchantCacheSync } from '../../shared/global'
+
 import Content from './components/Content'
 import Footer from './components/Footer'
-import { showToast } from '../../shared/toast'
 
 
 class OrderPage extends Component {
@@ -18,6 +19,7 @@ class OrderPage extends Component {
       sourceData: {}
     }
     this.handleFetchData = this.handleFetchData.bind(this)
+    this.handleSwitchPay = this.handleSwitchPay.bind(this)
   }
 
   componentDidMount () {
@@ -34,6 +36,7 @@ class OrderPage extends Component {
   componentDidHide () { }
 
   $instance = getCurrentInstance()
+  $merchantCache = getMerchantCacheSync() || {}
 
   handleFetchData () {
     const { orderId } = this.$instance.router.params
@@ -49,13 +52,18 @@ class OrderPage extends Component {
       })
   }
 
-  handleSwitchPay () {
-    showToast({title: '根据productOrderStatusCode是否可去支付'})
+  handleSwitchPay (data) {
+    handleRedirectTo({
+      path: '/pages/pay/index',
+      params: {
+        orderId: data.orderNum,
+        merchantNum: this.$merchantCache.merchantNum,
+        amount: data.orderAmount
+      }
+    })
   }
 
-  handleCancel () {
-    showToast({title: '根据productOrderStatusCode是否可取消'})
-  }
+  handleCancel () {}
 
   render () {
     const { sourceData } = this.state
@@ -65,6 +73,7 @@ class OrderPage extends Component {
           sourceData={sourceData}
         />
         <Footer
+          data={sourceData}
           onPay={this.handleSwitchPay}
           onCancel={this.handleCancel}
         />

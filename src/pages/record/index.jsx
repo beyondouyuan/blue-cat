@@ -4,9 +4,8 @@ import { View } from '@tarojs/components'
 import './index.scss'
 import { requestOrderList } from '../../service/order'
 import Content from './components/Content'
-import { handleNavigateTo } from '../../shared/navigator'
-
-import { showToast } from '../../shared/toast'
+import { handleNavigateTo, handleRedirectTo } from '../../shared/navigator'
+import { getMerchantCacheSync } from '../../shared/global'
 
 class RecordPage extends Component {
   constructor(props) {
@@ -15,6 +14,7 @@ class RecordPage extends Component {
       sourceData: []
     }
     this.handleFetchData = this.handleFetchData.bind(this)
+    this.handleSwitchPay = this.handleSwitchPay.bind(this)
   }
 
   componentDidMount () {
@@ -26,6 +26,8 @@ class RecordPage extends Component {
   componentDidShow () { }
 
   componentDidHide () { }
+
+  $merchantCache = getMerchantCacheSync() || {}
 
   handleFetchData () {
     requestOrderList()
@@ -45,12 +47,18 @@ class RecordPage extends Component {
     })
   }
 
-  handleSwitchPay () {
-    showToast({title: '根据productOrderStatusCode是否可去支付'})
+  handleSwitchPay (data) {
+    handleRedirectTo({
+      path: '/pages/pay/index',
+      params: {
+        orderId: data.orderNum,
+        merchantNum: this.$merchantCache.merchantNum,
+        amount: data.orderAmount
+      }
+    })
   }
 
   handleCancel () {
-    showToast({title: '根据productOrderStatusCode是否可取消'})
   }
 
   render () {

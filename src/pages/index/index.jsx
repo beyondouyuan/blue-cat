@@ -1,16 +1,16 @@
 import { Component } from 'react'
-import { View, Text } from '@tarojs/components'
+import { View, Text, Input } from '@tarojs/components'
 import classNames from 'classnames'
 import { chunk } from '../../shared/array'
 import BaseButton from '../../components/Button'
+import Dialog from '../../components/Dialog'
 
 import './index.scss'
 import { handleNavigateTo } from '../../shared/navigator'
-import { getAuthorize, getCode, getUserInfo } from '../../shared/login'
-import { requestLogin } from '../../service/user'
-import { getUserTokenCacheSync, setUserInfoCacheSync, setUserTokenCacheSync } from '../../shared/user'
+import { getToken, requestUserLogin } from '../../shared/login'
 import { setMerchantCacheSync } from '../../shared/global'
 import { requestMerchantTable } from '../../service/store'
+import events from '../../shared/event'
 
 
 const dines = Array.from(new Array(10), (val, index) => {
@@ -29,16 +29,22 @@ class IndexPage extends Component {
       peopleNum: 1,
       tableId: '7',
       storeInfo: {},
-      disabled: true
+      disabled: true,
+      loading: false,
+      inputPeopleNum: ''
     }
 
     this.handleNumberChange = this.handleNumberChange.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this)
     this.handleFetchData = this.handleFetchData.bind(this)
+    this.handleCancel = this.handleCancel.bind(this)
+    this.handleConfirm = this.handleConfirm.bind(this)
+    this.handleChangePeopleNum = this.handleChangePeopleNum.bind(this)
   }
   componentDidMount () {
     this.handleLogin()
     this.handleFetchData()
+    events.on('onloginSuccess', this.handleFetchData)
   }
 
   // componentWillReceiveProps (nextProps) {
@@ -52,47 +58,18 @@ class IndexPage extends Component {
   componentDidHide () { }
 
   async handleLogin() {
-    const token = getUserTokenCacheSync()
-    if (token) return
-    const code = await getCode()
-    await getAuthorize()
-    const userResult = await getUserInfo()
-    const {
-      cloudID,
-      encryptedData,
-      iv,
-      rawData,
-      signature,
-      userInfo
-    } = userResult
-    const params = {
-      cloudID,
-      encryptedData,
-      iv,
-      rawData: JSON.parse(rawData),
-      signature,
-      code,
-      userInfo
-    }
-    requestLogin(params)
-      .then(res => {
-        const { avatarUrl, nickName, userToken } = res
-        const userInfoData = {
-          nickName,
-          avatarUrl
-        }
-        setUserInfoCacheSync(userInfoData)
-        setUserTokenCacheSync(userToken)
-        this.handleFetchData()
-      })
-      .catch(e => {
-        console.log('e', e.code)
-      })
+    await requestUserLogin()
+    this.handleFetchData()
   }
 
   async handleFetchData() {
-    const token = getUserTokenCacheSync()
+    const token = getToken()
     if (!token) return
+    const { loading } = this.state
+    if (loading) return
+    this.setState({
+      loading: true
+    })
     try {
       const { tableId } = this.state
       const params = {
@@ -101,31 +78,48 @@ class IndexPage extends Component {
       const storeInfo = await requestMerchantTable(params)
       this.setState({
         storeInfo,
-        disabled: false
+        disabled: false,
+        loading: false
       })
     } catch (error) {
-      console.log(error)
+      this.setState({
+        loading: false
+      })
     }
   }
 
   handleNumberChange (v) {
-    // if (v === 10) {}
+    if (v === 10) {
+      this.handleShowDialog()
+      this.setState({
+        peopleNum: v
+      })
+      return
+    }
     this.setState({
-      peopleNum: v
+      peopleNum: v,
+      inputPeopleNum: ''
+    })
+  }
+
+  handleShowDialog () {
+    this.setState({
+      dialogVisible: true
     })
   }
 
   handleSubmit () {
-    const { tableId, peopleNum, storeInfo } = this.state
+    const { tableId, peopleNum, storeInfo, inputPeopleNum } = this.state
+    const finalNum = inputPeopleNum || peopleNum
     setMerchantCacheSync({
       ...storeInfo,
-      peopleNum
+      peopleNum: finalNum
     })
     handleNavigateTo({
       path: '/pages/store/index',
       params: {
         tableId,
-        peopleNum,
+        peopleNum: finalNum,
         tableName: storeInfo.tableNane,
         merchantNum: storeInfo.merchantNum,
         payTag: storeInfo.payTag
@@ -133,8 +127,28 @@ class IndexPage extends Component {
     })
   }
 
+  handleConfirm () {
+    this.setState({
+      dialogVisible: false
+    })
+  }
+
+  handleCancel () {
+    this.setState({
+      dialogVisible: false,
+      inputPeopleNum: '',
+      peopleNum: 1
+    })
+  }
+
+  handleChangePeopleNum(event) {
+    this.setState({
+      inputPeopleNum: +event.detail.value
+    })
+  }
+
   render () {
-    const { peopleNum, disabled, storeInfo } = this.state
+    const { inputPeopleNum, peopleNum, disabled, storeInfo, dialogVisible } = this.state
     return (
       <View className='page-container index-page'>
         <View className='container'>
@@ -194,6 +208,25 @@ class IndexPage extends Component {
             </View>
           </View>
         </View>
+        <Dialog
+          opened={dialogVisible}
+          confirmText='确定'
+          cancelText='取消'
+          onConfirm={this.handleConfirm}
+          onCancel={this.handleCancel}
+        >
+          <View className='form'>
+            <View className='form-item'>
+              <Input
+                className='input'
+                type='text'
+                placeholder='请输入就餐人数'
+                value={inputPeopleNum}
+                onInput={this.handleChangePeopleNum}
+              />
+            </View>
+          </View>
+        </Dialog>
       </View>
     )
   }

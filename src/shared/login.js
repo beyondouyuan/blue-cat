@@ -1,8 +1,10 @@
 import Taro from '@tarojs/taro'
+import { requestLogin } from '../service/user'
 import { setCacheSync, getCacheSync, removeCacheSync } from './storage'
+import { setUserInfoCacheSync } from './user'
 
 const LOCAL_CODE = 'LOCAL_CODE'
-const LOCAL_TOKEN = 'LOCAL_TOKEN'
+const LOCAL_USER_TOKEN = 'LOCAL_USER_TOKEN'
 
 // 检查登录是否过期
 export async function checkSession() {
@@ -21,7 +23,7 @@ export async function getCode () {
     if (bool) {
       return localCode
     } else {
-      removeCacheSync(LOCAL_CODE)
+      removeCode()
     }
   }
 
@@ -34,6 +36,10 @@ export async function getCode () {
   } catch (error) {
     return null
   }
+}
+
+export function removeCode() {
+  return removeCacheSync(LOCAL_CODE)
 }
 
 function getSetting() {
@@ -88,11 +94,54 @@ export async function getUserInfo () {
 }
 
 export function getToken () {
-  return getCacheSync(LOCAL_TOKEN)
+  return getCacheSync(LOCAL_USER_TOKEN)
 }
 
 export function setToken (v) {
-  setCacheSync(LOCAL_TOKEN, v)
+  setCacheSync(LOCAL_USER_TOKEN, v)
 }
 
-export function login () {}
+export function removeToken () {
+  return removeCacheSync(LOCAL_USER_TOKEN)
+}
+
+export async function requestUserLogin () {
+  const token = getToken()
+    if (token) {
+      return new Promise((resolve) => resolve())
+    }
+    const code = await getCode()
+    await getAuthorize()
+    const userResult = await getUserInfo()
+    const {
+      cloudID,
+      encryptedData,
+      iv,
+      rawData,
+      signature,
+      userInfo
+    } = userResult
+    const params = {
+      cloudID,
+      encryptedData,
+      iv,
+      rawData: JSON.parse(rawData),
+      signature,
+      code,
+      userInfo
+    }
+
+    return requestLogin(params)
+      .then(res => {
+        const { avatarUrl, nickName, userToken } = res
+        const userInfoData = {
+          nickName,
+          avatarUrl
+        }
+        setUserInfoCacheSync(userInfoData)
+        setToken(userToken)
+      })
+      .catch(e => {
+        console.log('e', e.code)
+      })
+}

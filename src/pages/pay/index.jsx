@@ -108,6 +108,9 @@ class MemberPage extends Component {
       showToast({
         title: '支付失败'
       })
+      handleRedirectTo({
+        path: `/pages/mine/index`
+      })
     }
   }
 
