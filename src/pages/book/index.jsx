@@ -24,7 +24,8 @@ class BookPage extends Component {
     this.state = {
       sourceList: [],
       sumAmount: 0,
-      productOrderId: ''
+      productOrderId: '',
+      submitLock: false
     }
 
     this.fetchShopCartList = this.fetchShopCartList.bind(this)
@@ -115,6 +116,12 @@ class BookPage extends Component {
           this.fetchShopCartList()
         })
       })
+      .catch((e) => {
+        this.setState({
+          submitLock: true
+        })
+        showToast({title: e?.message ?? '下单失败'})
+      })
   }
 
   async handleOrderPay() {
@@ -138,6 +145,7 @@ class BookPage extends Component {
       signType: parsePayInfo.signType,
       appid: parsePayInfo.appId
     }
+    const _self = this
     const condition = {
       ...payParams,
       success: function (rs) {
@@ -153,6 +161,9 @@ class BookPage extends Component {
       complete: (rs) => {
         removeOrderIdCacheSync()
         hideLoading()
+        _self.setState({
+          submitLock: false
+        })
         switch (rs.errMsg) {
           case 'requestPayment:fail cancel':
             handleRedirectTo({
@@ -200,6 +211,10 @@ class BookPage extends Component {
   }
 
   async handleSubmit() {
+    if (this.state.submitLock) return
+    this.setState({
+      submitLock: true
+    })
     showLoading({
       title: '请稍后...'
     })
@@ -207,7 +222,7 @@ class BookPage extends Component {
   }
 
   render() {
-    const { sourceList, sumAmount } = this.state
+    const { sourceList, sumAmount, submitLock } = this.state
     const { tableName } = this.$instance.router.params
     const { payTag, teaSeatFee } = this.$merchantCache
     return (
@@ -223,6 +238,7 @@ class BookPage extends Component {
           onPress={this.handlePress}
           onSubmit={this.handleSubmit}
           payTag={payTag}
+          disabled={submitLock}
         />
       </View>
     )

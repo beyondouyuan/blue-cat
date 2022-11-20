@@ -21,6 +21,8 @@ import { initSourceData, initMaterialsSource, updateMaterialsSource } from '../.
 import Compute from '../../shared/compute'
 import { getMerchantCacheSync, getOrderIdCacheSync } from '../../shared/global'
 import Merchant from './components/Merchant'
+import { showToast } from '../../shared/toast'
+import { hideLoading, showLoading } from '../../shared/loading'
 
 const cate = [{
   value: '1',
@@ -62,7 +64,8 @@ class StorePage extends Component {
       currentProductTypeId: '',
       scrollByClick: false,
       currentProductTypeLabel: '',
-      isOpenedOverlay: false
+      isOpenedOverlay: false,
+      addCartSubmitLock: false
     }
     this.handleOnScroll = this.handleOnScroll.bind(this)
     this.handleCloseDrawer = this.handleCloseDrawer.bind(this)
@@ -111,6 +114,7 @@ class StorePage extends Component {
   }
 
   handleFetchProduct() {
+    showLoading({ title: '请稍后...' })
     const { merchantNum } = this.$instance.router.params
     const params = {
       merchantNum: merchantNum || this.$merchantCache.merchantNum
@@ -126,10 +130,12 @@ class StorePage extends Component {
           currentProductTypeLabel: sidebarList[0]?.label ?? ''
         })
       })
+      .finally(() => {
+        hideLoading()
+      })
   }
 
   handleOnScroll(data) {
-    console.log(data)
     this.setState({
       showSearch: data.show
     })
@@ -355,6 +361,10 @@ class StorePage extends Component {
   }
 
   handleAddCart() {
+    if (this.state.addCartSubmitLock) return
+    this.setState({
+      addCartSubmitLock: true
+    })
     const {
       productPrice,
       currentProduct,
@@ -386,7 +396,14 @@ class StorePage extends Component {
       .then(() => {
         this.fetchShopCartList()
         this.setState({
-          drawerVisible: false
+          drawerVisible: false,
+          addCartSubmitLock: false
+        })
+      })
+      .catch(() => {
+        showToast({title: '添加商品失败'})
+        this.setState({
+          addCartSubmitLock: false
         })
       })
   }

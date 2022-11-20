@@ -1,7 +1,7 @@
 import { View, Text } from '@tarojs/components'
 import BaseButton from '../../../../components/Button'
 
-function Submit ({ onPress, onSubmit, sumAmount = 0, payTag }) {
+function Submit ({ onPress, onSubmit, sumAmount = 0, payTag, disabled = false }) {
   return (
     <View className='submit-container'>
       <View className='submit-container__content'>
@@ -18,7 +18,7 @@ function Submit ({ onPress, onSubmit, sumAmount = 0, payTag }) {
             )
           }
           <View className='submit'>
-            <BaseButton size='middle' circle onClick={onSubmit}>立即支付</BaseButton>
+            <BaseButton size='middle' disabled={disabled} circle onClick={onSubmit}>立即支付</BaseButton>
           </View>
         </View>
       </View>
