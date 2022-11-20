@@ -14,7 +14,11 @@ class Cart extends Component {
           className='cart-view'
           scrollY
           scrollWithAnimation
-          lowerThreshold={30}
+          scrollAnchoring
+          fastDeceleration
+          enhanced
+          bounces={false}
+          lowerThreshold={100}
         >
           {
             shoppingCartList && shoppingCartList.map(item => {

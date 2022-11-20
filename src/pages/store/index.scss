@@ -20,7 +20,7 @@
 
     .merchant-container {
       position: absolute;
-      top: 148px;
+      top: 180px;
       left: 0;
       z-index: 100;
       width: 100%;
@@ -47,7 +47,7 @@
 
   .tabar-container {
     width: 100%;
-    height: 80px;
+    height: 90px;
     padding: 0 20px;
     box-sizing: border-box;
     position: relative;
@@ -141,7 +141,8 @@
     border-top-left-radius: $border-radius-xl;
     border-top-right-radius: $border-radius-xl;
     background-color: $white;
-    padding-top: 150px;
+    padding-top: 180px;
+    box-sizing: border-box;
 
     .main {
       width: 100%;
@@ -152,7 +153,7 @@
 
     .action-container {
       width: 100%;
-      padding: 10px 20px;
+      padding: 10px 20px 0px 20px;
       box-sizing: border-box;
       position: absolute;
       top: 0;
@@ -169,7 +170,7 @@
         height: 100%;
 
         .info {
-          height: 50px;
+          height: 80px;
           font-size: $font-size-sm;
           color: $text-secondary-color;
           display: flex;
@@ -178,9 +179,8 @@
         }
 
         .nav {
-          margin-top: 10px;
-          margin-bottom: 20px;
-          height: 60px;
+          margin: 10px auto;
+          height: 70px;
           padding: 0 10px;
           display: flex;
           align-items: center;
@@ -224,6 +224,7 @@
       align-items: center;
       justify-content: center;
       width: 100%;
+      height: 90px;
       padding: 15px 0;
       box-sizing: border-box;
 
@@ -255,7 +256,7 @@
     flex-direction: column;
 
     &__title {
-      padding: 10px;
+      padding: 20px 10px;
       box-sizing: border-box;
       font-size: $font-size-md;
       color: $text-secondary-color;
@@ -267,6 +268,10 @@
     width: 100%;
     box-sizing: border-box;
     overflow-y: hidden;
+
+    .content-item {
+      margin-bottom: 20px;
+    }
 
     .item-container {
       width: 100%;

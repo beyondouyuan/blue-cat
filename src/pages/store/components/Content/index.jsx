@@ -12,22 +12,22 @@ class Content extends Component {
   timer = null
   handleScrollToLower() { }
   handleOnScroll(e) {
-    // const timeoutTask = callback => () => {
-    //   callback.call(this, e);
-    // }
+    const timeoutTask = callback => () => {
+      callback.call(this, e);
+    }
 
-    // // 节流方法
-    // const throttleMethod = requestAnimationFrame
-    //   ? callback => requestAnimationFrame(timeoutTask(callback))
-    //   : callback => setTimeout(timeoutTask(callback), 16.67);
-    // // const throttleMethod = (callback) => {
-    // //   if (this.timer) {
-    // //     clearTimeout(this.timer)
-    // //   }
-    // //   return this.timer = setTimeout(timeoutTask(callback), 300)
-    // // }
-    // throttleMethod(this.handleScrollCallback)
-    this.handleScrollCallback(e)
+    // 节流方法
+    const throttleMethod = requestAnimationFrame
+      ? callback => requestAnimationFrame(timeoutTask(callback))
+      : callback => setTimeout(timeoutTask(callback), 16.67);
+    // const throttleMethod = (callback) => {
+    //   if (this.timer) {
+    //     clearTimeout(this.timer)
+    //   }
+    //   return this.timer = setTimeout(timeoutTask(callback), 300)
+    // }
+    throttleMethod(this.handleScrollCallback)
+    // this.handleScrollCallback(e)
   }
 
   handleScrollCallback(e) {
@@ -60,8 +60,9 @@ class Content extends Component {
         scrollWithAnimation
         scrollAnchoring
         fastDeceleration
+        enhanced
+        bounces={false}
         lowerThreshold={threshold}
-        onScrollToLower={this.handleScrollToLower}
         onScroll={this.handleOnScroll}
         scrollIntoView={`${scrollRef}-${currentIntoView}`}
       >

@@ -11,6 +11,10 @@ class Content extends Component {
         className='content-container'
         scrollY
         scrollWithAnimation
+        scrollAnchoring
+        fastDeceleration
+        enhanced
+        bounces={false}
         lowerThreshold={threshold}
       >
         <View className='content'>

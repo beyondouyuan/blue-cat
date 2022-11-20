@@ -129,6 +129,7 @@ class StorePage extends Component {
   }
 
   handleOnScroll(data) {
+    console.log(data)
     this.setState({
       showSearch: data.show
     })
@@ -606,7 +607,7 @@ class StorePage extends Component {
     const submitClass = showType === 'cart' ? 'hight' : ''
     const allPrice = Compute.add(productPrice, packPrice)
     const style = {
-      marginTop: showSearch ? '-70px' : '0px'
+      marginTop: showSearch ? '-90px' : '0px'
     }
     const merchantData = {
       address: this.$merchantCache.address,

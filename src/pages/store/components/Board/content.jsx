@@ -16,7 +16,7 @@ class Content extends Component {
     this.handleOnCounter = this.handleOnCounter.bind(this)
     this.handleOnRadio = this.handleOnRadio.bind(this)
   }
-  handleScrollToLower() { }
+
   handleOnPress(e, data) {
     this.props.onSelect(data)
   }
@@ -44,8 +44,11 @@ class Content extends Component {
         className='board-content'
         scrollY
         scrollWithAnimation
+        scrollAnchoring
+        fastDeceleration
+        enhanced
+        bounces={false}
         lowerThreshold={threshold}
-        onScrollToLower={this.handleScrollToLower}
       >
         {
           specVoMap.SIZE && (
