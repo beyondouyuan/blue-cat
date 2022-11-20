@@ -1,8 +1,7 @@
 import { View, Text, Image } from '@tarojs/components'
-import BaseIcon from '../../../../components/Icon'
 
 
-function UserInfo({ data, sourceData, onCode, onScan }) {
+function UserInfo({ data }) {
   return (
     <View className='member-container'>
       <View className='member-container__content'>
@@ -11,31 +10,17 @@ function UserInfo({ data, sourceData, onCode, onScan }) {
         </View>
         <View className='member-user'>
           <View className='member-user__name'>
-            <Text>{sourceData?.memberNum ?? ''}</Text>
+            <Text>{data?.memberList?.memberNum ?? ''}</Text>
           </View>
           <View className='member-user__name'>
-            <Text>{sourceData?.userName ?? `会员名: ${sourceData?.userName }` ?? ''}</Text>
-          </View>
-        </View>
-        <View className='action-panel'>
-          <View
-            className='action-panel--item'
-            onClick={onScan}
-          >
-            <BaseIcon name='icon-scan' size={24} />
-          </View>
-          <View
-            className='action-panel--item'
-            onClick={onCode}
-          >
-            <BaseIcon name='icon-qrcode' size={24} />
+            <Text>{data?.memberList?.userName ? `会员名: ${data?.memberList?.userName}` : data?.nickName ?? ''}</Text>
           </View>
         </View>
       </View>
       <View className='member-wrapper'>
         <View className='member-item coupon'>
           <View className='value'>
-            <Text>{sourceData?.couponList?.couponNum ?? 0}</Text>
+            <Text>{data?.couponList?.couponNum ?? 0}</Text>
           </View>
           <View className='label'>
             <Text>优惠券</Text>
@@ -43,7 +28,7 @@ function UserInfo({ data, sourceData, onCode, onScan }) {
         </View>
         <View className='member-item account'>
           <View className='value'>
-          <Text>{sourceData?.accountList?.balance ?? 0}</Text>
+          <Text>{data?.accountList?.balance ?? 0}</Text>
           </View>
           <View className='label'>
             <Text>账户</Text>
@@ -51,7 +36,7 @@ function UserInfo({ data, sourceData, onCode, onScan }) {
         </View>
         <View className='member-item integral'>
           <View className='value'>
-          <Text>{sourceData?.integralList?.integral ?? 0}</Text>
+          <Text>{data?.integralList?.integral ?? 0}</Text>
           </View>
           <View className='label'>
             <Text>积分</Text>

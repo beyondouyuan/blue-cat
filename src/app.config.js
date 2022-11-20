@@ -2,6 +2,7 @@
 export default defineAppConfig({
   pages: [
     'pages/index/index', // 选择餐桌
+    // 'pages/merchant/index', // 商户支付吗进入页面
     'pages/store/index', // 店铺
     'pages/book/index', // 下单
     'pages/result/index', // 支付结果

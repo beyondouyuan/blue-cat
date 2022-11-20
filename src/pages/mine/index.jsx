@@ -2,27 +2,22 @@ import { Component } from 'react'
 import { View } from '@tarojs/components'
 
 import './index.scss'
-import { getUserInfoCacheSync, getUserTokenCacheSync } from '../../shared/user'
 import UserInfo from './components/UserInfo'
 import Menu from './components/Menu'
 import { handleNavigateTo } from '../../shared/navigator'
-import { requestMember } from '../../service/user'
-import { handleCodePay, handleScanPay } from '../../shared/pay'
+import { requestUserInfo } from '../../service/user'
 
 class MinePage extends Component {
   constructor(props) {
     super(props)
     this.state = {
-      userInfo: {},
-      sourceData: {},
-      token: ''
+      sourceData: {}
     }
 
-    this.handleGetUserInfo = this.handleGetUserInfo.bind(this)
-    this.handleFetchMember = this.handleFetchMember.bind(this)
+    this.handleFetchData = this.handleFetchData.bind(this)
   }
   componentDidMount () {
-    this.handleGetUserInfo()
+    this.handleFetchData()
   }
   componentWillUnmount () { }
 
@@ -30,21 +25,8 @@ class MinePage extends Component {
 
   componentDidHide () { }
 
-  handleGetUserInfo () {
-    const userInfo = getUserInfoCacheSync()
-    const token = getUserTokenCacheSync()
-    this.setState({
-      userInfo: userInfo,
-      token
-    }, () => {
-      this.handleFetchMember()
-    })
-  }
-
-  handleFetchMember () {
-    const { token } = this.state
-    if (!token) return
-    requestMember()
+  handleFetchData () {
+    requestUserInfo()
       .then(res => {
         this.setState({
           sourceData: res
@@ -58,42 +40,12 @@ class MinePage extends Component {
     })
   }
 
-  handleScan() {
-    const condition = {
-      success: (res) => {
-        console.log(res)
-      },
-      fail: (err) => {
-        console.log(err)
-      },
-      complete: () => {},
-      onlyFromCamera: true
-    }
-    handleScanPay(condition)
-  }
-
-  handleCode() {
-    const condition = {
-      success: (res) => {
-        console.log(res)
-      },
-      fail: (err) => {
-        console.log(err)
-      },
-      complete: () => {}
-    }
-    handleCodePay(condition)
-  }
-
   render () {
-    const { userInfo, sourceData } = this.state
+    const { sourceData } = this.state
     return (
       <View className='page-container mine-page'>
         <UserInfo
-          data={userInfo}
-          sourceData={sourceData}
-          onScan={this.handleScan}
-          onCode={this.handleCode}
+          data={sourceData}
         />
         <Menu
           onPress={this.handlePress}

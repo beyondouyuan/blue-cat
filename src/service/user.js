@@ -47,3 +47,11 @@ export function requestMember(data) {
     bizType: 'memberDetail'
   })
 }
+
+export function requestUserInfo(data) {
+  return apiPost({
+    url: '/wechat/userInfoDetail',
+    data,
+    bizType: 'userInfoDetail'
+  })
+}
