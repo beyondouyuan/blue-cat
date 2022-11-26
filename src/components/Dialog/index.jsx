@@ -16,9 +16,8 @@ class Dialog extends Component {
 
   constructor(props) {
     super(props)
-    const { opened } = props
     this.state = {
-      isOpened: opened
+      isOpened: false
     }
     this.handleCancel = this.handleCancel.bind(this)
     this.handleConfirm = this.handleConfirm.bind(this)
@@ -26,17 +25,19 @@ class Dialog extends Component {
     this.handleClickOverLay = this.handleClickOverLay.bind(this)
   }
 
-  UNSAFE_componentWillReceiveProps(nextProps) {
-    const { opened } = nextProps
-    if (this.props.opened !== opened) {
+  static getDerivedStateFromProps(props) {
+    return {isOpened: props.opened };
+  }
 
-    }
+  componentWillReceiveProps (nextProps) {
+    const { opened } = nextProps
     if (opened !== this.state.isOpened) {
       this.setState({
         isOpened: opened
       })
     }
   }
+
 
   handleTouchScroll() {
 
@@ -121,7 +122,11 @@ class Dialog extends Component {
       >
         <View className='base-dialog-overlay' onClick={this.handleClickOverLay}></View>
         <View className='base-dialog-content'>
-          <View className='base-dialog--main'>{this.props.children}</View>
+          {
+            isOpened && (
+              <View className='base-dialog--main'>{this.props.children}</View>
+            )
+          }
           {
             isRenderAction && (
               <View className='base-dialog-footer'>

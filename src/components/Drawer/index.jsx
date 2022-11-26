@@ -26,7 +26,7 @@ class Drawer extends Component {
     super(props)
     this.state = {
       delay: false,
-      _show: props.show
+      _show: false
     }
     this.handleDelayShow = this.handleDelayShow.bind(this)
     this.handleDelayHide = this.handleDelayHide.bind(this)
@@ -34,12 +34,11 @@ class Drawer extends Component {
     this.handleClickOverLay = this.handleClickOverLay.bind(this)
   }
 
-  componentDidMount () {
-    const { _show } = this.state
-    if (_show) this.handleDelayShow()
+  static getDerivedStateFromProps(props) {
+    return {_show: props.show };
   }
 
-  UNSAFE_componentWillReceiveProps (nextProps) {
+  componentWillReceiveProps (nextProps) {
     const { show } = nextProps
     if (show !== this.state._show) {
       show ? this.handleDelayShow() : this.handleDelayHide()

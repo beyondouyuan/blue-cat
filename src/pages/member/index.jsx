@@ -1,11 +1,12 @@
 import { Component } from 'react'
 import { View, Text, Input, Picker } from '@tarojs/components'
 
-import BaseRadio from '../../components/Radio'
 import Drawer from '../../components/Drawer'
 import BasePicker from '../../components/Picker'
-import { createMember, requestArea, requestMember } from '../../service/user'
 import BaseButton from '../../components/Button'
+import BaseRadio from '../../components/Radio'
+
+import { createMember, requestArea, requestMember } from '../../service/user'
 
 import './index.scss'
 

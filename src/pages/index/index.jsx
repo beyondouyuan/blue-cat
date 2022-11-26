@@ -31,7 +31,8 @@ class IndexPage extends Component {
       storeInfo: {},
       disabled: true,
       loading: false,
-      inputPeopleNum: ''
+      inputPeopleNum: '',
+      dialogVisible: false
     }
 
     this.handleNumberChange = this.handleNumberChange.bind(this)
@@ -131,6 +132,11 @@ class IndexPage extends Component {
     this.setState({
       dialogVisible: false
     })
+    if (!this.state.inputPeopleNum) {
+      this.setState({
+        peopleNum: 1
+      })
+    }
   }
 
   handleCancel () {
